@@ -1,6 +1,6 @@
 # Speed Analysis
 
-Real-world inference speed on CPU-only hardware — the deployment target for local model users.
+Real-world inference speed on CPU-only hardware, the deployment target for local model users.
 
 !!! note "Hardware"
     All speed benchmarks run with [llama-bench](https://github.com/ggml-org/llama.cpp) using **0 GPU layers** (pure CPU) to represent the experience on student laptops and low-end machines. Prompt length: 512 tokens. Generation length: 128 tokens.
@@ -21,7 +21,7 @@ TTFT measures how long a user waits before seeing the first response token. Smal
 
 ## Key Observations
 
-- **Quantization directly improves speed** — Q4_K_M models run 2-3x faster than BF16 on CPU
+- **Quantization directly improves speed**: Q4_K_M models run 2-3x faster than BF16 on CPU
 - **1B models** comfortably exceed 10 t/s at Q4_K_M on most hardware
 - **4B models at Q4_K_M** hover around 4-6 t/s on CPU, borderline for interactive use
 - **TTFT scales linearly** with file size for a given hardware class

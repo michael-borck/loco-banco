@@ -1,4 +1,4 @@
-# LocoBench MoE-on-a-Budget — Design Spec
+# LocoBench MoE-on-a-Budget: Design Spec
 
 **Status:** Draft, awaiting user review
 **Date:** 2026-05-06
@@ -12,32 +12,32 @@
 
 ### The seed
 
-A YouTube creator demonstrated running **Qwen3-30B-A3B** (a Mixture-of-Experts model) on an 8-year-old GTX 1060 6GB at **17 tokens/sec with 256K context**, using five `llama.cpp` flags. The "satellite-phone" baseline was 3 tok/s; flag-by-flag they reached "reading speed" with full context. Stable, reproducible, single Docker command.
+A YouTube creator demonstrated running **Qwen3-30B-A3B** (a Mixture-of-Experts model) on an 8-year-old GTX 1060 6GB at **17 tokens/sec with 256K context**, using five `llama.cpp` flags. The "satellite-phone" baseline was 3 tok/s; flag-by-flag they reached "reading speed" with full context. The result was stable and reproducible with a single Docker command.
 
 The five flags:
 
-1. `--n_cpu_moe <N>` — pin every layer's expert blocks to CPU; keep attention/SSM on GPU
-2. `--no-mmap` — load entire model into RAM up front; eliminate disk page faults during inference
-3. **GPU/CPU split tuning** — sweep `n_cpu_moe` to maximize VRAM utilization without OOM
-4. **Turbo Quant KV cache** (`--cache-type-k q4_0 --cache-type-v q3_0`) — asymmetric KV compression exploiting Grouped Query Attention's 8:1 ratio
-5. `--mlock` (with container/Docker `IPC_LOCK` capability) — prevent kernel from paging experts back to disk during idle
+1. `--n_cpu_moe <N>`: pin every layer's expert blocks to CPU; keep attention/SSM on GPU
+2. `--no-mmap`: load entire model into RAM up front; eliminate disk page faults during inference
+3. **GPU/CPU split tuning**: sweep `n_cpu_moe` to maximize VRAM utilization without OOM
+4. **Turbo Quant KV cache** (`--cache-type-k q4_0 --cache-type-v q3_0`): asymmetric KV compression exploiting Grouped Query Attention's 8:1 ratio
+5. `--mlock` (with container/Docker `IPC_LOCK` capability): prevent kernel from paging experts back to disk during idle
 
 ### The opportunity for LocoBench
 
-LocoBench's central question is: *"I have X GB of VRAM — what's the best model I can run?"* The current matrix tops out at quantized 4B dense models in the 4GB and 6GB tiers. If a **30B-parameter MoE** can be coaxed onto the same cards by spending **system RAM instead of VRAM**, the whole tier matrix needs a rethink.
+LocoBench's central question is: *"I have X GB of VRAM: what's the best model I can run?"* The current matrix tops out at quantized 4B dense models in the 4GB and 6GB tiers. If a 30B-parameter MoE can be coaxed onto the same cards by spending system RAM instead of VRAM, the whole tier matrix needs a rethink.
 
 Two structural insights this spec investigates:
 
-- **VRAM determines how big your *active* model can be.** For Qwen3-30B-A3B that's 3B active params (~1.7 GB at Q4) — comfortably within 4GB and 6GB cards.
+- **VRAM determines how big your *active* model can be.** For Qwen3-30B-A3B that's 3B active params (~1.7 GB at Q4), comfortably within 4GB and 6GB cards.
 - **System RAM determines how big your *total* model can be.** With 64GB RAM, an 8GB GPU can run **Qwen3-Next-80B-A3B**. With 128GB, larger MoEs become candidates until *active* params become the new ceiling.
 
-This is a second axis LocoBench doesn't currently track. The spec adds it.
+LocoBench does not currently track this second axis; the spec adds it.
 
 ### Architectural notes that affect methodology
 
-- The article's expert-routing pattern (256 experts total, top-8 per token) **matches Qwen3-30B-A3B**, not Qwen3-Next-80B-A3B (which uses different expert counts). The article's separate claim of "30 of 40 layers are SSM" suggests Qwen3-Next architecture, which is **inconsistent with the 256/8 expert count of standard Qwen3-30B-A3B**. Likely explanations: (a) auto-caption transcription error on the SSM claim, (b) the speaker referenced architectural background from a different model. **The spec resolves this ambiguity by pinning model identity to GGUF SHA-256 before any benchmark run** (see §10 open questions).
-- If the model under test does have SSM layers (Qwen3-Next family), this affects parallelism: SSM layers compute one position at a time and cannot be parallelized across speculative-decoding draft windows. The article reports speculative decoding **slowed the setup from 17 → 11 tok/s**. Whether the cause is SSM serialization or pure MoE memory thrash, the negative result still applies and is worth documenting.
-- MoE expert routing is content-dependent. Per token, 8 of 256 experts wake up; in a batch of N tokens, up to 8N distinct experts may be needed. This is why CPU-offloaded MoE inference is **memory-bandwidth-bound**, not compute-bound.
+- The article's expert-routing pattern (256 experts total, top-8 per token) matches Qwen3-30B-A3B, not Qwen3-Next-80B-A3B (which uses different expert counts). The article's separate claim that "30 of 40 layers are SSM" suggests Qwen3-Next architecture, which conflicts with the 256/8 expert count of standard Qwen3-30B-A3B. Likely explanations: (a) auto-caption transcription error on the SSM claim, (b) the speaker referenced architectural background from a different model. The spec resolves this by pinning model identity to a GGUF SHA-256 before any benchmark run (see §10 open questions).
+- If the model under test does have SSM layers (Qwen3-Next family), this affects parallelism: SSM layers compute one position at a time and cannot be parallelized across speculative-decoding draft windows. The article reports speculative decoding slowed the setup from 17 to 11 tok/s. Whether the cause is SSM serialization or pure MoE memory thrash, the negative result still applies and is worth documenting.
+- MoE expert routing is content-dependent. Per token, 8 of 256 experts wake up; in a batch of N tokens, up to 8N distinct experts may be needed. This is why CPU-offloaded MoE inference is memory-bandwidth-bound, not compute-bound.
 
 ---
 
@@ -56,7 +56,7 @@ Determine, for each consumer-GPU VRAM tier from 2GB to 8GB:
 
 | # | Question | Tier | Why it matters |
 |---|---|---|---|
-| 1 | Does **OLMoE-1B-7B beat TinyLlama-1.1B** on a 2GB card? | 2GB | Same active compute, 7× stored knowledge — clean test of MoE thesis |
+| 1 | Does **OLMoE-1B-7B beat TinyLlama-1.1B** on a 2GB card? | 2GB | Same active compute, 7× stored knowledge: clean test of MoE thesis |
 | 2 | Does **Qwen3-30B-A3B fit a GTX 1050 Ti 4GB** with the 5 flags? | 4GB | Article assumed 6GB floor; 4GB would extend the result |
 | 3 | Can we **reproduce 17 tok/s on the GTX 1060 6GB**? | 6GB | Methodology validation |
 | 4 | Does **24GB → 64GB RAM upgrade unlock Qwen3-Next-80B-A3B** on an RTX 2060 Super 8GB? | 8GB | Establishes RAM-as-second-axis story |
@@ -66,21 +66,21 @@ Determine, for each consumer-GPU VRAM tier from 2GB to 8GB:
 
 - Training, fine-tuning, or LoRA adapter work (that's LocoLLM, not LocoBench)
 - Routing or orchestration across models (LocoLLM territory)
-- Datacenter GPUs (V100/A100/H100) — V100 included only as a stretch transfer experiment, see §7
-- Quantization research beyond Q4_K_M weights and Q4/Q3 KV — no GPTQ/AWQ/EXL2/etc.
+- Datacenter GPUs (V100/A100/H100); V100 included only as a stretch transfer experiment, see §7
+- Quantization research beyond Q4_K_M weights and Q4/Q3 KV; no GPTQ/AWQ/EXL2/etc.
 - Beating frontier models. The bar is *"useful on hardware you already own."*
-- Dual-Xeon NUMA experiments — single-Xeon X99 is the canonical rig. Dual-Xeon noted as optional appendix only.
-- Models above 8GB active params — won't fit any tier in scope
+- Dual-Xeon NUMA experiments. Single-Xeon X99 is the canonical rig; dual-Xeon noted as optional appendix only.
+- Models above 8GB active params; won't fit any tier in scope
 
 ### Success criteria
 
 The spec is successful if, after execution, we can publish:
 
-1. A clear **answer per headline question** with measured numbers (not just qualitative claims)
+1. A clear answer per headline question, backed by measured numbers
 2. A **per-tier results table** showing best MoE vs best dense, on quality and speed
 3. A **default-vs-optimized speedup curve** per tier with per-flag attribution
 4. A **standalone "five flags" recipe doc** anyone can copy-paste
-5. **Reproducibility manifest**: GGUF hashes, exact flags, hardware fingerprint, container image — every run reproducible from `config.yaml` alone
+5. **Reproducibility manifest**: GGUF hashes, exact flags, hardware fingerprint, container image; every run reproducible from `config.yaml` alone
 6. The **article's 17 tok/s claim either reproduced or refuted** with explanation
 
 ---
@@ -89,7 +89,7 @@ The spec is successful if, after execution, we can publish:
 
 ### Primary rig (canonical configuration)
 
-- **Motherboard:** **X99M-A** (single-socket, 4 DIMM slots). Chosen over the user's dual-socket X99 board because (a) MoE expert lookup is random-access across hundreds of blocks, so NUMA penalty actively hurts; (b) `numactl`-pinning a dual board to socket 0 just leaves the second CPU idle — no benefit for this workload; (c) 128GB ceiling on X99M-A is sufficient for every model in scope, including the Qwen3-Next-80B-A3B unlock test (~45GB at Q4). The X79 alternative is rejected: DDR3 + 32GB practical cap means it cannot host the 80B-A3B test.
+- **Motherboard:** **X99M-A** (single-socket, 4 DIMM slots). We chose it over the user's dual-socket X99 board because (a) MoE expert lookup is random-access across hundreds of blocks, so the NUMA penalty actively hurts; (b) `numactl`-pinning a dual board to socket 0 just leaves the second CPU idle, with no benefit for this workload; (c) the 128GB ceiling on X99M-A is sufficient for every model in scope, including the Qwen3-Next-80B-A3B unlock test (~45GB at Q4). We rejected the X79 alternative: DDR3 and a 32GB practical cap mean it cannot host the 80B-A3B test.
 - **CPU:** single Xeon (LGA 2011-3), full memory bandwidth on quad-channel DDR4 from one socket
 - **RAM:** DDR4, ECC if board/CPU support it. **1 DIMM per channel** for max bandwidth. RAM matrix per §3 below.
 - **PCIe slot:** x16 Gen3, CPU-served (not chipset-routed)
@@ -98,7 +98,7 @@ The spec is successful if, after execution, we can publish:
 
 ### Note for readers on consumer (non-server) boards
 
-The X99M-A "1 DIMM per channel = 4 DIMMs total" guidance above applies to **server boards with quad-channel memory controllers** (X99, X299, EPYC). It does **not** transfer cleanly to **consumer dual-channel boards** (AM5, modern Intel desktop). On those, populating all four DIMM slots often forces the memory controller to downclock to maintain signalling integrity, throttling the very bandwidth this workload needs. The consumer-board rule is the inverse: prefer **2x64GB over 4x32GB** at the same total — fewer slots populated, higher sustained clocks, more usable bandwidth.
+The X99M-A "1 DIMM per channel = 4 DIMMs total" guidance above applies to **server boards with quad-channel memory controllers** (X99, X299, EPYC). It does **not** transfer cleanly to **consumer dual-channel boards** (AM5, modern Intel desktop). On those, populating all four DIMM slots often forces the memory controller to downclock to maintain signalling integrity, throttling the very bandwidth this workload needs. The consumer-board rule is the inverse: prefer 2x64GB over 4x32GB at the same total, because fewer slots are populated, clocks stay higher, and more bandwidth is usable.
 
 A reader running a consumer-tier rig should treat the RAM matrix below as "total RAM target" and choose the 2-DIMM configuration that hits it (2x16GB → 32GB; 2x32GB → 64GB; 2x64GB → 128GB). The MoE+RAM thesis itself is unchanged; only the slot population strategy differs.
 
@@ -106,14 +106,14 @@ See also `loco-bench/src/content/docs/advanced-reference.md` for the upper-tier 
 
 ### GPU swap matrix
 
-The rig is held constant; GPUs are physically swapped between runs. This controls every variable except VRAM/architecture.
+We hold the rig constant and physically swap GPUs between runs. This controls every variable except VRAM and architecture.
 
 | Tier | GPU | Architecture | Year | Role |
 |---|---|---|---|---|
 | **2GB** | GTX 950 | Maxwell | 2015 | Absolute floor; OLMoE vs TinyLlama showdown |
 | **4GB** | GTX 1050 Ti | Pascal | 2016 | Article-architecture continuity; Qwen3-30B-A3B floor test |
 | **6GB** | GTX 1060 6GB | Pascal | 2016 | **Article reproduction target: ≥17 tok/s** on Qwen3-30B-A3B optimized |
-| **8GB** | RTX 2060 Super | Turing | 2019 | "Sleeper card" — headroom for 30B-A3B; Qwen3-Next-80B-A3B at 64GB RAM |
+| **8GB** | RTX 2060 Super | Turing | 2019 | "Sleeper card": headroom for 30B-A3B; Qwen3-Next-80B-A3B at 64GB RAM |
 
 ### RAM matrix
 
@@ -122,16 +122,16 @@ User starts at **32GB (4×8GB)** currently installed and will source **4×16GB =
 | RAM | Source | Tiers run at this RAM | Target outcome |
 |---|---|---|---|
 | **32GB** (current) | 4×8GB DDR4 | All four GPU tiers (2GB → 8GB) | Baseline runs for all primary models except Qwen3-Next-80B-A3B |
-| **64GB** (source 4×16GB) | swap from 32GB after baseline complete | 8GB tier (RTX 2060 Super) re-run | **Qwen3-Next-80B-A3B unlock test** — the headline RAM-as-second-axis finding |
+| **64GB** (source 4×16GB) | swap from 32GB after baseline complete | 8GB tier (RTX 2060 Super) re-run | **Qwen3-Next-80B-A3B unlock test**: the headline RAM-as-second-axis finding |
 | **128GB** (stretch, 4×32GB) | conditional purchase | 8GB tier only | Run only if 64GB result with 80B-A3B is compelling enough to justify DIMM purchase. Targets larger MoEs (Phi-3.5-MoE, GRIN-MoE) where active params still fit 8GB |
 
-The 32GB → 64GB → 128GB progression is the **RAM-as-second-axis** experimental story. By holding GPU constant (RTX 2060 Super 8GB) and varying RAM, the spec isolates RAM as the lever that unlocks larger total-model classes.
+The 32GB → 64GB → 128GB progression tests the RAM-as-second-axis idea. By holding the GPU constant (RTX 2060 Super 8GB) and varying RAM, the spec isolates RAM as the lever that unlocks larger total-model classes.
 
 ### Optional sidebars (one-shot data points, not full sweeps)
 
-- **GTX 960 4GB (Maxwell)** — does the 4GB-tier finding hold across architectures? Single optimized run for cross-architecture validation. Cut if results clutter the chart.
-- **GTX 980 Ti 6GB (Maxwell)** — Maxwell-at-6GB sidebar. Same purpose. Cut if not useful.
-- **Dual-Xeon NUMA penalty quantification** — if the user temporarily moves the GPU and RAM into the dual-Xeon X99 board for one run, this gives a single appendix data point: same model, same GPU, dual-socket without `numactl` pinning vs single-socket on X99M-A. Demonstrates *why* we excluded dual-socket. Strictly optional; skip if it adds calendar drag.
+- **GTX 960 4GB (Maxwell).** Does the 4GB-tier finding hold across architectures? Single optimized run for cross-architecture validation. Cut if results clutter the chart.
+- **GTX 980 Ti 6GB (Maxwell).** Maxwell-at-6GB sidebar. Same purpose. Cut if not useful.
+- **Dual-Xeon NUMA penalty quantification.** If the user temporarily moves the GPU and RAM into the dual-Xeon X99 board for one run, this gives a single appendix data point: same model, same GPU, dual-socket without `numactl` pinning vs single-socket on X99M-A. Demonstrates *why* we excluded dual-socket. Strictly optional; skip if it adds calendar drag.
 
 ### Cards explicitly excluded from primary scope
 
@@ -147,8 +147,8 @@ All weights in **GGUF Q4_K_M** for apples-to-apples comparison. KV cache default
 
 | Tier | MoE candidates | Dense baseline | Headline result the matrix produces |
 |---|---|---|---|
-| **2GB** | OLMoE-1B-7B (7B total / 1B active) | TinyLlama-1.1B | "Same active compute, 7× knowledge — does MoE specialization beat the dense floor?" |
-| **4GB** | Qwen1.5-MoE-A2.7B (14B/2.7B), DeepSeek-V2-Lite (16B/2.4B), **Qwen3-30B-A3B (floor test)** | Qwen3-4B-Instruct | "Three MoEs vs strongest dense — does the article's 30B sneak onto a 1050 Ti?" |
+| **2GB** | OLMoE-1B-7B (7B total / 1B active) | TinyLlama-1.1B | "Same active compute, 7× knowledge: does MoE specialization beat the dense floor?" |
+| **4GB** | Qwen1.5-MoE-A2.7B (14B/2.7B), DeepSeek-V2-Lite (16B/2.4B), **Qwen3-30B-A3B (floor test)** | Qwen3-4B-Instruct | "Three MoEs vs strongest dense: does the article's 30B sneak onto a 1050 Ti?" |
 | **6GB** | **Qwen3-30B-A3B (article reproduction)** | Qwen3-4B-Instruct | "17 tok/s replication + 5-flag speedup curve" |
 | **8GB** | Qwen3-30B-A3B, **Qwen3-Next-80B-A3B (at 64GB RAM)** | Phi-4-Mini-Instruct | "Sleeper card story: 8GB + 64GB DDR4 runs an 80B model at reading speed" |
 
@@ -168,12 +168,12 @@ All weights in **GGUF Q4_K_M** for apples-to-apples comparison. KV cache default
 
 ### Verification step before benchmarking
 
-Before any benchmark run, confirm exact GGUF source, quantization recipe, and hash for each model. The article's "Qwen 2.5 35B A3B" naming was a transcription error for **Qwen3-30B-A3B**; the model identity must be locked unambiguously to the actual HuggingFace repo and file hash before the spec executes.
+Before any benchmark run, confirm the exact GGUF source, quantization recipe, and hash for each model. The article's "Qwen 2.5 35B A3B" naming was a transcription error for Qwen3-30B-A3B, so we must lock model identity to the actual HuggingFace repo and file hash before the spec executes.
 
 ### Deferred to follow-up (NOT in this spec)
 
-- Mixtral 8x7B (12.9B active — won't fit 8GB)
-- Phi-3.5-MoE-instruct, GRIN-MoE (6.6B active — borderline 8GB; needs own sub-study)
+- Mixtral 8x7B (12.9B active, won't fit 8GB)
+- Phi-3.5-MoE-instruct, GRIN-MoE (6.6B active, borderline 8GB; needs its own sub-study)
 - DeepSeek-V3, Qwen3-Coder-480B-A35B (datacenter MoEs)
 
 ---
@@ -199,21 +199,21 @@ Before any benchmark run, confirm exact GGUF source, quantization recipe, and ha
    quality              speed                     memory + stability
 ```
 
-Why this shape: `llama.cpp` flags are the lever the spec is testing. Splitting the server from the evaluator gives us free flag control on the inference side without touching the evaluation code.
+Why this shape: the `llama.cpp` flags are the lever the spec tests. Splitting the server from the evaluator gives us free flag control on the inference side without touching the evaluation code.
 
 ### Config presets
 
-The model-side variable. Each (model, tier) cell of the matrix runs every applicable preset.
+Presets are the model-side variable. Each (model, tier) cell of the matrix runs every applicable preset.
 
 | Preset | Applies to | Flags |
 |---|---|---|
 | **default** | All models, all tiers | Stock llama.cpp; auto `-ngl` split, mmap on, no mlock, KV cache Q8 |
 | **optimized-moe** | MoE models only | `--n_cpu_moe <tuned per tier>`, `--no-mmap`, `--mlock`, `--cache-type-k q4_0 --cache-type-v q3_0` |
-| **optimized-dense** | Dense models, optional | `--no-mmap`, `--mlock`. Skip Turbo Quant KV — gains marginal for dense; flag-on adds risk of quality regression. Apply only when `default` is borderline OOM at high context |
+| **optimized-dense** | Dense models, optional | `--no-mmap`, `--mlock`. Skip Turbo Quant KV: gains marginal for dense; flag-on adds risk of quality regression. Apply only when `default` is borderline OOM at high context |
 
 ### Per-flag attribution sweeps
 
-For Qwen3-30B-A3B on the 1060 6GB (the article's exact rig), run an **incremental flag sweep** to attribute speedup to each flag independently. This reproduces the article's narrative arc and gives readers per-flag value:
+For Qwen3-30B-A3B on the 1060 6GB (the article's exact rig), run an incremental flag sweep to attribute speedup to each flag independently. This reproduces the article's sequence and gives readers per-flag value:
 
 1. baseline (`-ngl 20`, no other flags) → expected ~3 tok/s
 2. + `--n_cpu_moe 41` → expected ~10 tok/s
@@ -222,25 +222,25 @@ For Qwen3-30B-A3B on the 1060 6GB (the article's exact rig), run an **incrementa
 5. + Turbo Quant KV (Q4/Q3), with `--n_cpu_moe 36` to fit larger KV → expected 17 tok/s, context restored to 256K
 6. + `--mlock` → 17 tok/s, stable through 72h idle
 
-Other tiers run only `default` and `optimized-moe` (full bundle). The full attribution sweep is a 6GB-only artifact that exists to reproduce the article and break out the contribution per flag.
+Other tiers run only `default` and `optimized-moe` (full bundle). The full attribution sweep runs only on the 6GB tier; it reproduces the article and breaks out each flag's contribution.
 
 ### Multiple benchmarks per (model × tier × preset) cell
 
 #### Quality (via lm-eval-harness against the llama.cpp server)
 
-- **MMLU** — broad knowledge; tests whether expert routing helps factual recall
-- **GSM8K** — math reasoning; tests whether sparse activation hurts chain-of-thought
-- **HellaSwag** — commonsense; cheap-to-answer baseline expected to favor MoE
-- **TruthfulQA** — factuality; catches Turbo-Quant degradation if any
-- **ARC-Challenge** — science reasoning
-- **NIAH (needle-in-a-haystack)** — long-context retrieval at **1K, 8K, 64K, 256K context**. Validates that Turbo-Quant'd KV cache actually retrieves correctly at 256K, not just runs without OOM
+- **MMLU**: broad knowledge; tests whether expert routing helps factual recall
+- **GSM8K**: math reasoning; tests whether sparse activation hurts chain-of-thought
+- **HellaSwag**: commonsense; cheap-to-answer baseline expected to favor MoE
+- **TruthfulQA**: factuality; catches Turbo-Quant degradation if any
+- **ARC-Challenge**: science reasoning
+- **NIAH (needle-in-a-haystack)**: long-context retrieval at **1K, 8K, 64K, 256K context**. Checks retrieval at 256K; the cache must fit without OOM and still return the right answer
 
 #### Speed (via llama-bench + custom prompts)
 
-- tokens/sec at **1K, 8K, 64K, 256K** context lengths (the curve, not just one number)
+- tokens/sec at **1K, 8K, 64K, 256K** context lengths (the full curve across context lengths)
 - TTFT (time-to-first-token) at each context length
 
-Two prompts to vary: short-question-long-context (NIAH-shaped) vs long-generation (creative writing) — the second stresses generation throughput, the first stresses prompt processing.
+Two prompts to vary: short-question-long-context (NIAH-shaped) and long-generation (creative writing). The second stresses generation throughput; the first stresses prompt processing.
 
 #### Memory
 
@@ -255,12 +255,12 @@ Two prompts to vary: short-question-long-context (NIAH-shaped) vs long-generatio
 - 72h is the article's "day 3 slowdown" timeline
 - Pass criterion: <5% degradation at 72h with `--mlock`; degradation expected without it
 
-The user has confirmed rigs can be tied up for 72h tests — these are research machines.
+The user has confirmed the rigs can be tied up for 72h tests. These are research machines.
 
 ### What we expect to fail (and document)
 
-- **Speculative decoding** on Qwen3-Next-80B-A3B — article reports 17 → 11 tok/s regression due to (a) memory thrash from batched expert lookups, (b) SSM layers preventing draft-window parallelism. Spec includes one negative-result run to confirm and document.
-- **Turbo Quant KV on dense models without GQA at 8:1** — may degrade quality; only apply to MoE in primary scope.
+- **Speculative decoding** on Qwen3-Next-80B-A3B. The article reports a 17 to 11 tok/s regression due to (a) memory thrash from batched expert lookups, (b) SSM layers preventing draft-window parallelism. The spec includes one negative-result run to confirm and document.
+- **Turbo Quant KV on dense models without GQA at 8:1**. May degrade quality; only apply to MoE in primary scope.
 - Any flag that "should work" but doesn't, gets a paragraph in the writeup. The article's transparency on speculative-decoding failure is part of why it's credible; we match that standard.
 
 ### Reuse vs new code
@@ -336,24 +336,24 @@ flags:
 
 ### Docs deliverables
 
-- **`docs/moe-on-a-budget.md`** — the primary narrative writeup
-- **`docs/the-five-flags.md`** — standalone copy-paste recipe doc
-- Updated **`README.md`** tier table — adds "Best MoE that fits" column
-- **`docs/assets/`** — speedup curves, quality-vs-size scatters, mlock stability traces
+- **`docs/moe-on-a-budget.md`**: the primary narrative writeup
+- **`docs/the-five-flags.md`**: standalone copy-paste recipe doc
+- Updated **`README.md`** tier table: adds "Best MoE that fits" column
+- **`docs/assets/`**: speedup curves, quality-vs-size scatters, mlock stability traces
 
 ### Narrative structure of `docs/moe-on-a-budget.md`
 
-1. **The thesis** — VRAM holds the active model; system RAM holds the rest
-2. **The five flags** — recipe summary, link to standalone doc
-3. **Tier walkthroughs** — one section per VRAM tier with the headline finding:
+1. **The thesis:** VRAM holds the active model; system RAM holds the rest
+2. **The five flags:** recipe summary, link to standalone doc
+3. **Tier walkthroughs:** one section per VRAM tier with the headline finding:
    - 2GB: OLMoE-vs-TinyLlama showdown chart
    - 4GB: "Qwen3-30B-A3B does fit a 1050 Ti"
    - 6GB: Article reproduction + per-flag speedup curve
    - 8GB: Sleeper card + Qwen3-Next-80B-A3B unlock at 64GB RAM
-4. **Cross-tier findings** — speedup attribution per flag, RAM-as-second-axis chart
-5. **What we tried that didn't work** — speculative decoding regression on SSM/MoE; any other dead ends
-6. **Transfer to datacenter** — V100 stretch results if completed
-7. **Closing: the AI-last frame** — see §8
+4. **Cross-tier findings:** speedup attribution per flag, RAM-as-second-axis chart
+5. **What we tried that didn't work:** speculative decoding regression on SSM/MoE; any other dead ends
+6. **Transfer to datacenter:** V100 stretch results if completed
+7. **Closing: the AI-last frame.** See §8
 
 ---
 
@@ -361,9 +361,9 @@ flags:
 
 ### V100 32GB transfer experiment (stretch, in this spec)
 
-Triggered only **after consumer-tier results are in** and validated.
+Run it only after consumer-tier results are in and validated.
 
-The V100 is a different physics regime: **HBM2 at ~900 GB/s** vs DDR4 at 38–70 GB/s. CPU-RAM expert offload is much slower relative to GPU memory than on consumer cards, which means smaller MoEs benefit less from `--n_cpu_moe` (they already fit in 32GB VRAM directly). The interesting V100 question is at the **upper tail**: can it run models that don't fit even 32GB VRAM?
+The V100 is a different physics regime: HBM2 at ~900 GB/s versus DDR4 at 38 to 70 GB/s. CPU-RAM expert offload is much slower relative to GPU memory than on consumer cards, so smaller MoEs benefit less from `--n_cpu_moe` (they already fit in 32GB VRAM directly). The interesting V100 question is at the upper tail: can it run models that do not fit even 32GB VRAM?
 
 | What transfers | What changes |
 |---|---|
@@ -382,16 +382,16 @@ The V100 is a different physics regime: **HBM2 at ~900 GB/s** vs DDR4 at 38–70
 
 #### NVMe as RAM extension
 
-When the model exceeds available RAM, the next bottleneck is **NVMe page-in cost**. PCIe 4.0 x4 NVMe ≈ 7 GB/s read; DDR4 quad-channel ≈ 70 GB/s. So NVMe is ~10× slower than RAM — but for very-large MoEs (DeepSeek-V3 at Q4 ≈ 350 GB), it may be the only option short of multi-socket server boards.
+When the model exceeds available RAM, the next bottleneck is NVMe page-in cost. PCIe 4.0 x4 NVMe reads at about 7 GB/s; DDR4 quad-channel at about 70 GB/s. NVMe is therefore about 10× slower than RAM, but for very large MoEs (DeepSeek-V3 at Q4 ≈ 350 GB), it may be the only option short of multi-socket server boards.
 
 Possible directions for a follow-up spec:
 
-- **mmap'd model on NVMe + selective expert pinning** — keep frequently-activated experts in RAM page cache, page cold ones from disk
+- **mmap'd model on NVMe + selective expert pinning**: keep frequently-activated experts in RAM page cache, page cold ones from disk
 - **Two-level cache:** GPU VRAM (active 8 experts) ← RAM (warm experts) ← NVMe (cold experts)
 - **Expert activation profiling:** which experts fire often enough to deserve RAM residency? Per-task or per-domain expert pinning hints
 - **Predictive prefetch:** can we pre-load experts the next token will likely need based on routing patterns?
 
-This is its own research direction. Note as future work, not primary scope.
+This is its own research direction and belongs in future work.
 
 #### Other parking-lot items
 
@@ -408,7 +408,7 @@ The spec's closing message in `docs/moe-on-a-budget.md`:
 
 > *Before you buy a faster card, set five flags. Before you buy more VRAM, buy more RAM. Before you reach for a bigger model, ask whether a sparse one specialised to your task does the job. The cheapest performance is the performance you didn't need to hire.*
 
-This connects to the broader LocoLab thesis. LocoLLM applies AI-last at the *training* layer — small specialist models routed to tasks, instead of one large generalist. This spec applies AI-last at the *deployment* layer — engineering before hardware, RAM before VRAM, sparsity before scale. Same philosophy, different layer of the stack.
+This connects to the broader LocoLab thesis. LocoLLM applies AI-last at the *training* layer: small specialist models routed to tasks, instead of one large generalist. This spec applies AI-last at the *deployment* layer: engineering before hardware, RAM before VRAM, sparsity before scale. Same philosophy, different layer of the stack.
 
 ---
 
@@ -453,33 +453,33 @@ This connects to the broader LocoLab thesis. LocoLLM applies AI-last at the *tra
 After execution and writeup, candidate next specs:
 
 1. **NVMe-as-RAM-extension for >128GB MoE inference** (the parking-lot item)
-2. **V100 deep dive** if stretch experiment is compelling
+2. **V100 follow-up** if the stretch experiment is compelling
 3. **MoE inference engine comparison** (llama.cpp vs vLLM vs SGLang) at fixed hardware
 4. **Asymmetric expert-weight quantization** (quant non-expert layers heavier than expert layers, or vice versa)
 
-Not in scope. Listed for visibility.
+These are not in scope; they are listed for visibility.
 
 ---
 
 ## Appendix A: Glossary
 
-- **A3B notation** — "Active 3 Billion": a model with 3B active parameters per token. Total parameter count given separately (e.g., "30B-A3B" = 30B total, 3B active).
-- **MoE (Mixture of Experts)** — model architecture where most weights live in expert blocks; only a subset (typically 8 of 256) are activated per token via a learned routing function.
-- **GQA (Grouped Query Attention)** — attention variant sharing KV heads across multiple Q heads. The 8:1 ratio in Qwen3 means keys can take heavier KV-cache compression than values.
-- **SSM (State Space Model) layers** — alternative to attention that computes one position at a time, depending on the prior state. Cannot be parallelized across speculative-decoding draft windows.
-- **`--n_cpu_moe N`** — llama.cpp flag pinning every layer's expert blocks to CPU for N layers, keeping non-expert (attention/SSM) parts on GPU.
-- **`--no-mmap`** — load entire model into RAM at startup; eliminates per-inference disk page faults.
-- **`--mlock`** — instruct kernel not to page locked memory back to disk; requires container `IPC_LOCK` capability.
-- **Turbo Quant KV** — Google DeepMind 2025 paper applying random rotation + aggressive quantization (Q4 keys / Q3 values) to KV cache with near-lossless quality given GQA structure.
-- **NIAH (Needle-in-a-Haystack)** — long-context retrieval benchmark: place a known fact ("the needle") in a long document and ask the model to retrieve it.
+- **A3B notation**: "Active 3 Billion": a model with 3B active parameters per token. Total parameter count given separately (e.g., "30B-A3B" = 30B total, 3B active).
+- **MoE (Mixture of Experts)**: model architecture where most weights live in expert blocks; only a subset (typically 8 of 256) are activated per token via a learned routing function.
+- **GQA (Grouped Query Attention)**: attention variant sharing KV heads across multiple Q heads. The 8:1 ratio in Qwen3 means keys can take heavier KV-cache compression than values.
+- **SSM (State Space Model) layers**: alternative to attention that computes one position at a time, depending on the prior state. Cannot be parallelized across speculative-decoding draft windows.
+- **--n_cpu_moe N**: llama.cpp flag pinning every layer's expert blocks to CPU for N layers, keeping non-expert (attention/SSM) parts on GPU.
+- **--no-mmap**: load entire model into RAM at startup; eliminates per-inference disk page faults.
+- **--mlock**: instruct kernel not to page locked memory back to disk; requires container IPC_LOCK capability.
+- **Turbo Quant KV**: Google DeepMind 2025 paper applying random rotation + aggressive quantization (Q4 keys / Q3 values) to KV cache with near-lossless quality given GQA structure.
+- **NIAH (Needle-in-a-Haystack)**: long-context retrieval benchmark: place a known fact ("the needle") in a long document and ask the model to retrieve it.
 
 ## Appendix B: References
 
-- LocoBench README — `loco-bench/README.md` — tier philosophy and existing model matrix
-- LocoLLM README — `loco-llm/README.md` — adapter training thesis (this spec is the deployment-layer counterpart)
-- Article — YouTube video transcript provided by user during brainstorming; five flags, Qwen3-30B-A3B (likely; identity to be confirmed) on GTX 1060 6GB, 17 tok/s @ 256K context. Add explicit URL when added to the docs writeup.
-- Turbo Quant paper — Google DeepMind, 2025 — random rotation + aggressive KV quantization
-- Qwen3 model family — HuggingFace `Qwen/Qwen3-*`
-- OLMoE — Allen AI, `allenai/OLMoE-1B-7B-0924`
-- llama.cpp — `ggerganov/llama.cpp`
-- lm-evaluation-harness — `EleutherAI/lm-evaluation-harness`
+- LocoBench README: loco-bench/README.md: tier philosophy and existing model matrix
+- LocoLLM README: loco-llm/README.md: adapter training thesis (this spec is the deployment-layer counterpart)
+- Article: YouTube video transcript provided by user during brainstorming; five flags, Qwen3-30B-A3B (likely; identity to be confirmed) on GTX 1060 6GB, 17 tok/s @ 256K context. Add explicit URL when added to the docs writeup.
+- Turbo Quant paper: Google DeepMind, 2025: random rotation + aggressive KV quantization
+- Qwen3 model family: HuggingFace Qwen/Qwen3-*
+- OLMoE: Allen AI, allenai/OLMoE-1B-7B-0924
+- llama.cpp: ggerganov/llama.cpp
+- lm-evaluation-harness: EleutherAI/lm-evaluation-harness

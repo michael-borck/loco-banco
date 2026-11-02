@@ -21,8 +21,8 @@ How does quality change as you reduce precision? Each line represents one model 
 
 ## Key Observations
 
-- **Knowledge tasks (MMLU)** degrade fastest under quantization — factual recall is stored in weights and compressed away first
-- **Commonsense reasoning (HellaSwag)** is most robust, retaining 95%+ of BF16 quality even at Q4_0
+- **Knowledge tasks (MMLU)** degrade fastest under quantization: factual recall is stored in weights and compressed away first
+- **Commonsense reasoning (HellaSwag)** holds up best, retaining 95%+ of BF16 quality even at Q4_0
 - **Math reasoning (GSM8K)** shows a sharp cliff below Q3_K_M for most models
 - **Larger models** (4B+) tolerate quantization better than 1B models at the same bpw
 - **The quantization cliff** typically appears between Q3_K_M (3.4 bpw) and Q2_K (2.6 bpw)

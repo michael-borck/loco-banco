@@ -1,20 +1,20 @@
 # loco-banco
 
-**I have X GB of VRAM — what's the best model I can run?**
+**I have X GB of VRAM. What's the best model I can run?**
 
 HuggingFace tells you which small model is best at full precision. The Open LLM Leaderboard tells you which large model is best on datacenter GPUs. **loco-banco tells you which model is best for your actual card.**
 
-Within each VRAM tier, full-precision small models compete head-to-head against quantized larger models. A BF16 SmolLM2-1.7B and a Q4_K_M Qwen3-4B both fit in 4GB — but which one actually wins?
+Within each VRAM tier, full-precision small models compete head-to-head against quantized larger models. A BF16 SmolLM2-1.7B and a Q4_K_M Qwen3-4B both fit in 4GB. Which one wins?
 
 !!! info "Sample Data"
     These charts currently show **simulated data** generated with realistic degradation curves. They will be replaced with real benchmark results once the full evaluation matrix completes.
 
 !!! tip "Key Finding"
-    Q4_K_M consistently sits in the efficiency sweet spot — retaining 90-95% of BF16 quality at ~30% of the file size. Below Q3_K_M, quality collapses sharply for knowledge-heavy tasks. But for the smallest VRAM budgets, full-precision sub-2B models may outperform heavily quantized larger ones.
+    Q4_K_M consistently sits in the efficiency sweet spot, retaining 90-95% of BF16 quality at ~30% of the file size. Below Q3_K_M, quality collapses sharply for knowledge-heavy tasks. At the smallest VRAM budgets, full-precision sub-2B models may outperform heavily quantized larger ones.
 
 ## Composite Score vs File Size
 
-Each point is one model at one precision level (full-precision or quantized). The **orange line** traces the Pareto frontier — the best quality achievable at each file size. Points above and to the left are more efficient.
+Each point is one model at one precision level (full-precision or quantized). The **orange line** traces the Pareto frontier: the best quality achievable at each file size. Points above and to the left are more efficient.
 
 <div id="chart-overview-scatter" class="plotly-chart"></div>
 
@@ -60,9 +60,9 @@ Composite score averages across MMLU, HellaSwag, GSM8K, TruthfulQA, and ARC-Chal
 
 ## Why This Exists
 
-Most published benchmarks compare models under ideal conditions — full precision, datacenter GPUs. Nobody systematically compares everything that fits within a given VRAM budget on consumer hardware. loco-banco fills that gap.
+Most published benchmarks compare models under ideal conditions: full precision, datacenter GPUs. Nobody systematically compares everything that fits within a given VRAM budget on consumer hardware, so loco-banco does that.
 
-The organising principle is the hardware constraint. Models are grouped by VRAM tier (4GB, 6GB, 8GB, 12GB, 16GB, 24GB, 32GB), and within each tier, every model that fits — whether full-precision or quantized — competes on quality, speed, and efficiency.
+The organising principle is the hardware constraint. Models are grouped by VRAM tier (4GB, 6GB, 8GB, 12GB, 16GB, 24GB, 32GB), and within each tier, every model that fits (whether full-precision or quantized) competes on quality, speed, and efficiency.
 
 The data is useful for anyone choosing a model for local deployment, and particularly for projects like [LocoLLM](https://github.com/michael-borck/loco-llm) that build on top of small models for consumer hardware.
 

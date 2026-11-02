@@ -104,7 +104,7 @@ students' spreadsheet, not in this data.
 
 ## Expectations, To Be Tested
 
-Recorded so they can be checked against the results rather than quietly
+Recorded so they can be checked against the results rather than simply
 confirmed.
 
 - Idle draw will dominate annual energy use at departmental utilisation.

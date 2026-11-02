@@ -2,7 +2,7 @@
 title: "GPU Inventory"
 ---
 
-Every GPU currently in the LocoLabo project, organised by machine. Cards move between machines as experiments require -- this is the current assignment.
+Every GPU currently in the LocoLabo project, organised by machine. Cards move between machines as experiments require. This is the current assignment.
 
 For specifications, acquisition guidance, and generation-level analysis see the [Nvidia GPU Reference](nvidia-gpu-reference).
 
@@ -10,13 +10,13 @@ For specifications, acquisition guidance, and generation-level analysis see the 
 
 ## Colmena
 
-The RTX-era benchmark platform. An 8-GPU enclosed mining rig running LocoBanco. Cards here are chosen as **floor representatives** -- the worst card per VRAM tier, so results are honest baselines. Matched trios give repeat-measurement discipline at their tier.
+The RTX-era benchmark platform. An 8-GPU enclosed mining rig running LocoBanco. Cards here are chosen as **floor representatives**: the worst card per VRAM tier, so results are honest baselines. Matched trios give repeat-measurement discipline at their tier.
 
 | Card | VRAM | Bandwidth | Tier Role |
 |------|------|-----------|-----------|
 | GTX 1060 6 GB (x3) | 6 GB | 192 GB/s | Floor of 6 GB tier (Pascal, no Tensor Cores); bridges into Tortuga's pre-RTX coverage |
 | RTX 2060 Super (x3) | 8 GB | 448 GB/s | Floor of 8 GB Turing tier (Tensor Cores). Three cards for result-consistency validation |
-| RTX 4060 Ti | 16 GB | 288 GB/s | Floor of 16 GB consumer tier -- documents the memory-bus penalty |
+| RTX 4060 Ti | 16 GB | 288 GB/s | Floor of 16 GB consumer tier; documents the memory-bus penalty |
 | RTX 5050 | 8 GB | 320 GB/s | Blackwell floor of 8 GB tier (GDDR6, FP4 support). Isolates architecture effect vs bandwidth deficit |
 
 ---
@@ -75,7 +75,7 @@ Student-facing host. Ryzen 5 2600 desktop running the "closing the gap" minimal 
 
 ## Búho
 
-Dedicated AI inference and LocoLLM adapter training. Single-Xeon X99 workstation with 32 GB DDR4. One card, one job -- patient and nocturnal.
+Dedicated AI inference and LocoLLM adapter training. Single-Xeon X99 workstation with 32 GB DDR4. One card, one job, patient and nocturnal.
 
 | Card | VRAM | Bandwidth | Tier Role |
 |------|------|-----------|-----------|
@@ -116,7 +116,7 @@ Low-profile / office deployment.
 | Unassigned | 4 | — |
 | **Total installed** | **28** | (+ 4 incoming server cards for Hidra) |
 
-*RTX 5060 Ti: not confirmed in fleet — omitted pending verification.*
+*RTX 5060 Ti: not confirmed in fleet, omitted pending verification.*
 
 ---
 

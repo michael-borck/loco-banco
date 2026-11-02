@@ -6,7 +6,7 @@ HuggingFace tells you which small model is best at full precision. The Open LLM 
 
 Most benchmarks compare models under ideal conditions. loco-banco compares everything that fits within a given VRAM budget (full-precision small models, quantized larger models, and everything in between) on real consumer hardware.
 
-A full-precision SmolLM2-1.7B and a Q4_K_M Qwen3-4B both fit in 4GB of VRAM. Which one is actually better? That's the question loco-banco answers.
+A full-precision SmolLM2-1.7B and a Q4_K_M Qwen3-4B both fit in 4GB of VRAM. Which one is better? loco-banco answers that question.
 
 ## How It Works
 
@@ -88,7 +88,7 @@ lm_eval --model hf \
   --output_path results/qwen3-4b-q4_k_m/
 ```
 
-That comparison, full-precision 1.7B vs quantized 4B at the same VRAM footprint, is the core of what loco-banco measures.
+loco-banco measures that comparison directly: full-precision 1.7B against quantized 4B at the same VRAM footprint.
 
 ## Turnkey Benchmarking (Planned)
 
@@ -129,7 +129,7 @@ This requires [llama.cpp](https://github.com/ggml-org/llama.cpp) built locally. 
 
 ## Hardware
 
-All benchmarks run on [Colmena](docs/colmena.md), a deliberately constrained 8-GPU rig built around an i3-3220 host. Each VRAM tier is benchmarked on the floor card for that tier. If it runs here, it runs on your card.
+All benchmarks run on [Colmena](docs/colmena.md), a deliberately constrained 8-GPU rig built around an i3-3220 host. Each VRAM tier is benchmarked on the floor card for that tier.
 
 | VRAM Tier | GPU | Role |
 |---|---|---|

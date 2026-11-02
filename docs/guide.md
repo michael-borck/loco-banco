@@ -1,14 +1,14 @@
 # Benchmarking Guide
 
-This document covers how to run loco-banco benchmarks, what hardware to use, and how to produce the "bang per bit" analysis that fills a genuine gap in the literature.
+This document covers how to run loco-banco benchmarks, what hardware to use, and how to produce the "bang per bit" analysis that fills a gap in the literature.
 
 ## What We're Measuring and Why
 
-Most published benchmarks evaluate full-precision models on cloud hardware. Nobody systematically compares everything that fits within a given VRAM budget — full-precision small models against quantized larger models — on consumer hardware. That's the gap loco-banco fills.
+Most published benchmarks evaluate full-precision models on cloud hardware. Nobody systematically compares everything that fits within a given VRAM budget (full-precision small models against quantized larger models) on consumer hardware. That's the gap loco-banco fills.
 
-We're running two distinct benchmarks that serve different purposes:
+We're running two distinct benchmarks for different purposes:
 
-**Benchmark A: "What's best for my VRAM budget?"** Within each VRAM tier (4GB, 6GB, 8GB, 12GB, 16GB, 24GB, 32GB), compare every model that fits — whether full-precision or quantized — on standard tasks. This answers which model+precision combination gives the most capability for a given hardware constraint.
+**Benchmark A: "What's best for my VRAM budget?"** Within each VRAM tier (4GB, 6GB, 8GB, 12GB, 16GB, 24GB, 32GB), compare every model that fits, whether full-precision or quantized, on standard tasks. This answers which model+precision combination gives the most capability for a given hardware constraint.
 
 **Benchmark B: "What's the real user experience?"** Run the top models per tier on actual target hardware and measure tokens/sec, time-to-first-token, and memory usage alongside quality. This connects quality numbers to deployment reality.
 
@@ -171,13 +171,13 @@ Within each tier, the model set includes both **full-precision small models** (e
 | 16GB | RTX 4060 Ti 16GB | 288 GB/s | Floor of 16GB consumer tier |
 | 16GB | Tesla P100 | 732 GB/s | 16GB server tier (HBM2, no Tensor Cores) |
 | 16GB | Tesla V100 16GB | 900 GB/s | 16GB server tier (HBM2, Tensor Cores; home lab) |
-| 24GB | RTX 3090 | 936 GB/s | Consumer ceiling — comparison benchmark |
+| 24GB | RTX 3090 | 936 GB/s | Consumer ceiling, comparison benchmark |
 | 32GB | Tesla V100 32GB | 900 GB/s | 32GB server tier (HBM2, Tensor Cores) |
 
 Each card answers two questions simultaneously:
 
-1. **What can this VRAM tier run?** (model compatibility — determined by VRAM capacity)
-2. **How fast is the worst case?** (inference speed — determined by memory bandwidth)
+1. **What can this VRAM tier run?** (model compatibility, determined by VRAM capacity)
+2. **How fast is the worst case?** (inference speed, determined by memory bandwidth)
 
 ### Bandwidth Extrapolation
 
@@ -185,28 +185,28 @@ Because the benchmark uses floor-of-tier hardware, users with faster cards in th
 
 **6GB tier:** "Benchmarked on a GTX 1060 6GB (192 GB/s). Users with a GTX 1660 Super (336 GB/s) or GTX 1660 Ti (288 GB/s) can expect approximately 50-75% higher token throughput on the same models. VRAM capacity and model compatibility results remain directly applicable regardless of card variant."
 
-**12GB tier:** "Benchmarked on an RTX 3060 (360 GB/s). Users with a 3080 12GB (912 GB/s) can expect significantly higher token throughput on the same models. The 3060 represents the entry point of the 12GB tier — model compatibility results apply to all 12GB cards, inference speed will be considerably higher on higher bandwidth variants."
+**12GB tier:** "Benchmarked on an RTX 3060 (360 GB/s). Users with a 3080 12GB (912 GB/s) can expect significantly higher token throughput on the same models. The 3060 is the entry point of the 12GB tier: model compatibility results apply to all 12GB cards, and inference speed will be considerably higher on higher bandwidth variants."
 
 Bandwidth deltas between cards within a tier are documented in `nvidia-gpu-reference.md`.
 
 ### The RTX 3090: Reference Ceiling
 
-The RTX 3090 (24GB, 936 GB/s) sits outside the affordable range for most LocoBanco users. It is included not as a recommendation but as a **comparison ceiling** — the answer to "what am I missing out on by staying in the affordable tiers?"
+The RTX 3090 (24GB, 936 GB/s) sits outside the affordable range for most LocoBanco users. It is here as a **comparison ceiling**: the answer to "what am I missing out on by staying in the affordable tiers?"
 
 - 24GB VRAM is the consumer ceiling for secondhand GPUs
 - It validates whether the floor-tier results scale predictably upward
-- The bandwidth story at 936 GB/s provides genuinely interesting comparative data against the floor cards
-- Most LocoBanco users have 8GB cards or less — the 3090 result tells them what they're leaving on the table, and in many cases the answer will be "not as much as you'd think"
+- The bandwidth story at 936 GB/s provides useful comparison data against the floor cards
+- Most LocoBanco users have 8GB cards or less. The 3090 result tells them what they're leaving on the table, and in many cases the answer will be "not as much as you'd think"
 
 ### The Server GPUs: P100 and V100
 
-The Tesla P100 (16 GB), V100 16 GB, and V100 32 GB round out the affordable end of the datacenter GPU secondhand market — cards that institutions and hobbyists can realistically acquire. They lack display outputs and require adequate cooling, but for headless inference servers they offer HBM2 bandwidth that rivals or exceeds consumer cards.
+The Tesla P100 (16 GB), V100 16 GB, and V100 32 GB round out the affordable end of the datacenter GPU secondhand market, cards that institutions and hobbyists can realistically acquire. They lack display outputs and require adequate cooling, but for headless inference servers they offer HBM2 bandwidth that rivals or exceeds consumer cards.
 
-The server GPUs test a different question: **does HBM2 bandwidth compensate for older architecture?** At the 16 GB tier, three cards with the same VRAM but wildly different architectures (Ada Lovelace, Pascal, Volta) make the cleanest test in the lineup for isolating what drives inference speed.
+The server GPUs test a different question: does HBM2 bandwidth compensate for older architecture? At the 16 GB tier, three cards with the same VRAM but very different architectures (Ada Lovelace, Pascal, Volta) make the cleanest test in the lineup for isolating what drives inference speed.
 
 ### Benchmarking vs Personal Use
 
-This floor-of-tier philosophy serves **benchmarking** — producing conservative, widely applicable baselines. For **personal inference serving** where tokens per second matters, chasing the best-in-class card for your budget is the right strategy. Different goals, different hardware decisions.
+This floor-of-tier philosophy serves **benchmarking**, producing conservative, widely applicable baselines. For **personal inference serving** where tokens per second matters, chasing the best-in-class card for your budget is the right strategy. Different goals, different hardware decisions.
 
 ### Factory Overclocks
 
@@ -241,7 +241,7 @@ One line per model, one panel per task. This shows which tasks are most quantiza
 
 X-axis: model size in GB. Y-axis: tokens per second (CPU-only).
 
-Overlay with iso-quality contours. This shows the trade-off space users actually navigate: "I have 8GB of RAM, how much quality can I get and how fast?"
+Overlay with iso-quality contours. This shows the trade-off space users navigate: "I have 8GB of RAM, how much quality can I get and how fast?"
 
 ### Chart 4: Quality Recovery Through Fine-Tuning
 
@@ -249,7 +249,7 @@ Once fine-tuned adapters exist (e.g., from [LocoLLM](https://github.com/michael-
 
 X-axis: quant level. Y-axis: benchmark score. Two lines per model: base and with adapter.
 
-This shows whether fine-tuning recovers quantization losses. If the adapter lines are flatter than the base lines, it proves that task-specific fine-tuning buffers against quantization degradation. That would be a genuinely novel finding.
+This shows whether fine-tuning recovers quantization losses. If the adapter lines are flatter than the base lines, it proves that task-specific fine-tuning buffers against quantization degradation. That would be a new result.
 
 ## Publishing the Results
 
@@ -282,7 +282,7 @@ Build a Gradio or Streamlit dashboard that:
 
 ### As a Technical Report
 
-The benchmark data frames as:
+The technical report would cover:
 
 1. **The gap:** Published benchmarks don't cover quantized 3-4B models systematically
 2. **The method:** Standard evaluation applied to a controlled matrix of models x quant levels x tasks x hardware
@@ -291,12 +291,12 @@ The benchmark data frames as:
 
 ## Community Contributions
 
-Colmena generates the reference baseline -- controlled, repeatable, well documented. But the real value of loco-banco grows when the community extends coverage across hardware Colmena will never have.
+Colmena generates the controlled, repeatable, well-documented reference baseline. The project becomes more useful when the community extends coverage across hardware Colmena will never have.
 
 ### Why Community Results Matter
 
 - Results from diverse real-world environments are more credible than a single controlled rig
-- The dataset grows to cover GPUs nobody in the lab owns -- 3090s, 4090s, AMD, Apple Silicon, laptop GPUs
+- The dataset grows to cover GPUs nobody in the lab owns: 3090s, 4090s, AMD, Apple Silicon, laptop GPUs
 - Each submission validates whether Colmena's floor-tier results hold on different hardware
 - The project shifts from "one person's benchmark" to "a community instrument with a reference implementation"
 
@@ -311,7 +311,7 @@ Results should include:
 - The standard loco-banco output (lm-eval JSON + llama-bench CSV)
 - Any relevant system context (CPU, RAM, OS)
 
-Submission format and tooling are being developed. The design constraint is simplicity -- if it takes more than a few minutes to set up and run, it's too complicated.
+Submission format and tooling are being developed. The design constraint is simplicity: if it takes more than a few minutes to set up and run, it's too complicated.
 
 ### Apple Silicon
 

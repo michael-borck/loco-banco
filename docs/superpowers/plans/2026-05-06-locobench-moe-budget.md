@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a benchmark harness that boots `llama.cpp server` with named config presets, runs quality + speed + memory + stability + long-context probes, and produces reproducible results across 2–8GB consumer GPU tiers — then execute it across the spec's matrix to answer the five headline questions.
+**Goal:** Build a benchmark harness that boots `llama.cpp server` with named config presets, runs quality + speed + memory + stability + long-context probes, and produces reproducible results across 2 to 8GB consumer GPU tiers. Then run it across the spec's matrix to answer the five headline questions.
 
-**Architecture:** New `scripts/moe/` Python package wraps `llama.cpp server` (OpenAI-compatible API) and feeds it to `lm-eval-harness` via `--model openai-completions`. Per-cell results land in `results/moe-budget/<tier>/<model>/<preset>/` with a load-bearing `config.yaml` capturing exact flags + GGUF SHA-256 + hardware fingerprint. Existing dense-model scripts (`scripts/benchmark_speed.py`, `scripts/benchmark_quality.py`) are not modified — they continue to run their own dense matrix. New code is isolated in `scripts/moe/` and `tests/moe/`.
+**Architecture:** New `scripts/moe/` Python package wraps `llama.cpp server` (OpenAI-compatible API) and feeds it to `lm-eval-harness` via `--model openai-completions`. Per-cell results land in `results/moe-budget/<tier>/<model>/<preset>/` with a load-bearing `config.yaml` capturing exact flags + GGUF SHA-256 + hardware fingerprint. We leave the existing dense-model scripts (`scripts/benchmark_speed.py`, `scripts/benchmark_quality.py`) unchanged; they continue to run their own dense matrix. New code is isolated in `scripts/moe/` and `tests/moe/`.
 
 **Tech Stack:** Python 3.10+, `llama.cpp` (Docker container, GHCR), `lm-evaluation-harness`, `requests`, `PyYAML`, `pytest`. Existing `pyproject.toml` is extended with a `moe` optional dependency group.
 
@@ -57,7 +57,7 @@
 
 ### Existing files NOT touched
 
-`scripts/benchmark_speed.py`, `scripts/benchmark_quality.py`, `scripts/download_models.sh` (extended in a new task, not modified — see Task 11), `scripts/generate_chart_data.py`, `scripts/convert_and_quantize.sh`, `scripts/gpu-onboard.sh`. The dense-model matrix continues to run as today.
+`scripts/benchmark_speed.py`, `scripts/benchmark_quality.py`, `scripts/download_models.sh` (extended in a new task, not modified; see Task 11), `scripts/generate_chart_data.py`, `scripts/convert_and_quantize.sh`, `scripts/gpu-onboard.sh`. The dense-model matrix continues to run as today.
 
 ---
 
@@ -108,7 +108,7 @@ Write to `tests/moe/__init__.py`:
 ```python
 ```
 
-(empty file — package marker)
+(empty file, a package marker)
 
 - [ ] **Step 4: Create tests/moe/conftest.py**
 
@@ -479,7 +479,7 @@ Expected: PASS (4 tests total)
 
 - [ ] **Step 5: Create the actual models.yaml**
 
-Write to `configs/moe-budget/models.yaml` (SHA-256 values are placeholders to be filled in Task 11 after download — flagged with `TBD-FILL-IN-TASK-17` so a grep can find them):
+Write to `configs/moe-budget/models.yaml` (SHA-256 values are placeholders to be filled in Task 11 after download, flagged with `TBD-FILL-IN-TASK-17` so a grep can find them):
 
 ```yaml
 # Model registry for the MoE-on-a-budget study.
@@ -555,7 +555,7 @@ models:
     params_active_b: 3.8
 ```
 
-> **Note for the implementer:** HF repo paths and exact filenames must be verified before downloading. If a listed repo does not exist or the GGUF filename differs (common — repos use varied casing/naming), update `models.yaml` and re-commit before Task 11. Do not silently fall back to a different file.
+> **Note for the implementer:** HF repo paths and exact filenames must be verified before downloading. If a listed repo does not exist or the GGUF filename differs (common: repos use varied casing and naming), update `models.yaml` and re-commit before Task 11. Do not silently fall back to a different file.
 
 - [ ] **Step 6: Commit**
 
@@ -928,7 +928,7 @@ python scripts/moe/generate_cells.py
 
 Expected output: `Wrote 17 cell configs to configs/moe-budget/cells`
 
-Verify with `ls configs/moe-budget/cells/ | wc -l` → 17 (plus the `example.yaml` from Task 3 = 18).
+Verify with `ls configs/moe-budget/cells/ | wc -l`; expect 17 (plus the `example.yaml` from Task 3 = 18).
 
 - [ ] **Step 6: Commit**
 
@@ -2663,7 +2663,7 @@ git commit -m "Add hardware fingerprint capture (CPU, RAM DIMMs, GPU)"
 
 ## Phase 5: Top-level driver
 
-### Task 14: run_cell.py — orchestrate one cell of the matrix
+### Task 14: run_cell.py: orchestrate one cell of the matrix
 
 **Files:**
 - Create: `scripts/moe/run_cell.py`
@@ -2980,7 +2980,7 @@ source /tmp/llamacpp_image.env
 docker run --rm "${DIGEST}" --server --help 2>&1 | grep -E '(--n-cpu-moe|--mlock|--no-mmap|--cache-type-k|--cache-type-v)'
 ```
 
-Expected: at least 5 matching lines (one per required flag). If any are missing, the image is too old — pull a newer tag (e.g., a recent dated tag like `:server-cuda-b<NNNN>`) and re-run step 1.
+Expected: at least 5 matching lines (one per required flag). If any are missing, the image is too old. Pull a newer tag (e.g., a recent dated tag like `:server-cuda-b<NNNN>`) and re-run step 1.
 
 - [ ] **Step 3: Write the pinned digest to container.yaml using the captured value**
 
@@ -3033,7 +3033,7 @@ This is the spec's Open Question #1. Resolve before downloading the wrong GGUF.
 
 - [ ] **Step 1: Inspect article evidence**
 
-The article transcript states "256 specialists, 8 wake up per token" — this matches **Qwen3-30B-A3B** (`128 experts × 2 layers = 256` per the model card; top-8 routing). It also claims "30 of 40 layers are SSM," which would point to a Qwen3-Next variant. These are inconsistent.
+The article transcript states "256 specialists, 8 wake up per token". This matches Qwen3-30B-A3B (`128 experts × 2 layers = 256` per the model card; top-8 routing). It also claims "30 of 40 layers are SSM," which would point to a Qwen3-Next variant. These are inconsistent.
 
 - [ ] **Step 2: Check model cards on HuggingFace for both candidates**
 
@@ -3051,7 +3051,7 @@ Expected outcome: Qwen3-30B-A3B has 128 experts × top-8, all attention layers (
 
 - [ ] **Step 3: Decide which model the article ran**
 
-Decision rule: model size (~20GB after Q4 → 18GB on 24GB-RAM rig) is the dominant evidence. Qwen3-30B-A3B Q4 is ~18GB. Qwen3-Next-80B-A3B Q4 is ~45GB and would NOT fit 24GB RAM at all. **Therefore the article ran Qwen3-30B-A3B**, and the SSM claim in the transcript is an auto-caption error.
+Decision rule: model size (~20GB after Q4, 18GB on a 24GB-RAM rig) is the dominant evidence. Qwen3-30B-A3B Q4 is ~18GB. Qwen3-Next-80B-A3B Q4 is ~45GB and would not fit 24GB RAM at all. The article therefore ran Qwen3-30B-A3B, and the SSM claim in the transcript is an auto-caption error.
 
 - [ ] **Step 4: Document the decision**
 
@@ -3200,7 +3200,7 @@ for repo in \
 done
 ```
 
-Expected: every repo resolves. Any MISSING means update `models.yaml` with the correct repo path before continuing — Bartowski/TheBloke/Unsloth often re-pack the same model under different repos.
+Expected: every repo resolves. Any MISSING means update `models.yaml` with the correct repo path before continuing. Bartowski/TheBloke/Unsloth often re-pack the same model under different repos.
 
 - [ ] **Step 3: Download Q4_K_M variants of all 8 models**
 
@@ -3219,7 +3219,7 @@ grep -c "TBD-FILL-IN-TASK-17" configs/moe-budget/models.yaml
 
 Expected: `0` (zero remaining sentinels). If non-zero, re-run download for the missing models.
 
-- [ ] **Step 5: Commit (do NOT commit the GGUFs themselves — just hashes)**
+- [ ] **Step 5: Commit (do NOT commit the GGUFs themselves: just hashes)**
 
 ```bash
 echo "models/" >> .gitignore
@@ -3233,11 +3233,11 @@ git commit -m "Download GGUFs and record SHA-256 hashes in models.yaml"
 
 This is a sanity check before doing real benchmark runs. Run the smallest cell to verify all components wire together.
 
-**Files:** none modified — this is a runtime validation.
+**Files:** none modified; this is a runtime validation.
 
 - [ ] **Step 1: Pick the smoke-test cell**
 
-The smallest cell is **2GB / TinyLlama-1.1B / default** — fast to download, fast to load, fast to evaluate. We are NOT yet on the GTX 950 rig — run on whatever GPU is currently in the X99M-A box for this smoke test only.
+The smallest cell is 2GB / TinyLlama-1.1B / default: quick to download, load, and evaluate. We are not yet on the GTX 950 rig, so run this smoke test on whatever GPU is currently in the X99M-A box.
 
 - [ ] **Step 2: Run it**
 
@@ -3257,18 +3257,18 @@ ls results/moe-budget/2gb/tinyllama-1.1b/default/
 ```
 
 Expected files:
-- `config.yaml` — non-empty, contains real GPU/host fingerprint, no `<placeholder>` text
-- `lm_eval.json` — non-empty, contains scores for at least mmlu/gsm8k/hellaswag
-- `niah.json` — non-empty (lengths capped at 4096)
-- `llama_bench.json` — non-empty
-- `resources.json` — non-empty
-- `lm_eval_raw/` — directory of raw lm_eval outputs
+- `config.yaml`: non-empty, contains real GPU/host fingerprint, no `<placeholder>` text
+- `lm_eval.json`: non-empty, contains scores for at least mmlu/gsm8k/hellaswag
+- `niah.json`: non-empty (lengths capped at 4096)
+- `llama_bench.json`: non-empty
+- `resources.json`: non-empty
+- `lm_eval_raw/`: directory of raw lm_eval outputs
 
-If any file is missing or empty → debug the corresponding component before proceeding.
+If any file is missing or empty, debug the corresponding component before proceeding.
 
 - [ ] **Step 4: Sanity-check tok/s and quality numbers**
 
-Open `llama_bench.json`. TinyLlama-1.1B Q4 should generate at hundreds of tok/s on any modern GPU. If it's <50, GPU offload isn't working — check `nvidia-smi` during the run.
+Open `llama_bench.json`. TinyLlama-1.1B Q4 should generate at hundreds of tok/s on any modern GPU. If it's <50, GPU offload isn't working. Check `nvidia-smi` during the run.
 
 Open `lm_eval.json`. TinyLlama MMLU should be ~25-30%, GSM8K ~2-5%. If wildly off, the lm-eval connection or chat template is wrong.
 
@@ -3281,13 +3281,13 @@ git commit -m "Smoke-test cell: 2GB / TinyLlama-1.1B / default"
 
 ---
 
-## Phase 7: Validation gate — 6GB tier (article reproduction)
+## Phase 7: Validation gate: 6GB tier (article reproduction)
 
-This is the methodology gate. If we cannot reproduce 17 tok/s on a GTX 1060 with the optimized-moe preset, the methodology has a bug — fix it before continuing.
+If we cannot reproduce 17 tok/s on a GTX 1060 with the optimized-moe preset, the methodology has a bug. Fix it before continuing.
 
 ### Task 19: Install the GTX 1060 6GB into the rig
 
-**Files:** none — physical hardware swap.
+**Files:** none; physical hardware swap.
 
 - [ ] **Step 1: Power down the X99M-A**
 - [ ] **Step 2: Remove current GPU; install GTX 1060 6GB**
@@ -3314,7 +3314,7 @@ python -m scripts.moe.run_cell \
   --container "$(grep full_reference configs/moe-budget/container.yaml | cut -d: -f2- | tr -d ' ')"
 ```
 
-Expected: SLOW. Article reports ~3 tok/s for this configuration. Cell completes in hours (lm-eval over MMLU at 3 tok/s is painful). Acceptable — this baseline is the "satellite phone" floor.
+Expected: slow. The article reports ~3 tok/s for this configuration. The cell completes in hours (lm-eval over MMLU at 3 tok/s is painful). That is acceptable; this baseline is the "satellite phone" floor.
 
 - [ ] **Step 2: Verify outputs and tok/s**
 
@@ -3344,7 +3344,7 @@ python -m scripts.moe.run_cell \
 
 Expected: cell completes in 1-3 hours (much faster than baseline due to ~17 tok/s).
 
-- [ ] **Step 2: Validation gate — does it reproduce 17 tok/s?**
+- [ ] **Step 2: Validation gate: does it reproduce 17 tok/s?**
 
 Open `results/moe-budget/6gb/qwen3-30b-a3b/optimized-moe/llama_bench.json`. Look at `tok_per_sec_by_ctx`. The `tg128` (text generation, 128 tokens) entry should be close to **17 tok/s**.
 
@@ -3353,7 +3353,7 @@ Open `results/moe-budget/6gb/qwen3-30b-a3b/optimized-moe/llama_bench.json`. Look
 | **15-19 tok/s** | PASS. Methodology validated. Proceed. |
 | 10-15 tok/s | INVESTIGATE. Possibly RAM speed difference, n_cpu_moe tuning, or driver. Do not proceed until resolved. |
 | <10 tok/s | FAIL. Stop. Diff your config.yaml against the article's setup. Common culprits: (a) wrong llama.cpp version, (b) `--no-mmap` not actually applied (check `run.log` for the docker command), (c) RAM not at full bandwidth (verify with `dmidecode`), (d) GPU not actually connected x16 Gen3 (`nvidia-smi --query-gpu=pcie.link.gen.current,pcie.link.width.current --format=csv`). |
-| >19 tok/s | INVESTIGATE — possibly faster RAM than the article. Document. |
+| >19 tok/s | INVESTIGATE: possibly faster RAM than the article. Document. |
 
 - [ ] **Step 3: Verify VRAM utilization**
 
@@ -3583,9 +3583,9 @@ git commit -m "6GB / Qwen3-30B-A3B / optimized-moe — 72h stability test"
 
 ## Phase 8: Other tier runs
 
-These run after the validation gate passes. Each tier is a sequence of GPU swap → run cells → commit results. The harness is unchanged from Phase 7.
+These run after the validation gate passes. Each tier is a sequence: swap the GPU, run the cells, commit the results. The harness is unchanged from Phase 7.
 
-### Task 24: 4GB tier — install GTX 1050 Ti, run all 4GB cells
+### Task 24: 4GB tier: install GTX 1050 Ti, run all 4GB cells
 
 **Files:** writes to `results/moe-budget/4gb/...`
 
@@ -3613,7 +3613,7 @@ git commit -m "4GB tier results — Qwen3-30B-A3B floor + Qwen1.5-MoE + DeepSeek
 
 ---
 
-### Task 25: 2GB tier — install GTX 950, run all 2GB cells
+### Task 25: 2GB tier: install GTX 950, run all 2GB cells
 
 **Files:** writes to `results/moe-budget/2gb/...`
 
@@ -3651,7 +3651,7 @@ git commit -m "2GB tier results — OLMoE-1B-7B vs TinyLlama-1.1B"
 
 ---
 
-### Task 26: 8GB / 32GB-RAM tier — install RTX 2060 Super, run cells at current 32GB RAM
+### Task 26: 8GB / 32GB-RAM tier: install RTX 2060 Super, run cells at current 32GB RAM
 
 **Files:** writes to `results/moe-budget/8gb-32gbram/...`
 
@@ -3686,7 +3686,7 @@ git commit -m "8GB/32GB-RAM tier — Qwen3-30B-A3B headroom + Phi-4-Mini baselin
 
 This is a hardware procurement step, not a code step.
 
-**Files:** none — physical RAM swap.
+**Files:** none; physical RAM swap.
 
 - [ ] **Step 1: Source 4×16GB DDR4 ECC RDIMM**
 
@@ -3710,7 +3710,7 @@ Expected: `total: 62-64 GB`.
 
 ---
 
-### Task 28: 8GB / 64GB-RAM tier — Qwen3-Next-80B-A3B unlock test
+### Task 28: 8GB / 64GB-RAM tier: Qwen3-Next-80B-A3B unlock test
 
 **Files:** writes to `results/moe-budget/8gb-64gbram/...`
 
@@ -3731,20 +3731,20 @@ python -m scripts.moe.run_cell \
   --container "$(grep full_reference configs/moe-budget/container.yaml | cut -d: -f2- | tr -d ' ')"
 ```
 
-Expected: load time ~3-5 minutes (47GB read into RAM via `--no-mmap`). Generation tok/s in the 5-15 range — slower than 30B-A3B due to larger total model and proportionally more bus traffic per token.
+Expected: load time ~3-5 minutes (47GB read into RAM via `--no-mmap`). Generation runs at 5-15 tok/s, slower than 30B-A3B because the total model is larger and each token moves proportionally more data across the bus.
 
 If load fails with OOM despite 64GB:
-- Check `ctx_size` — KV cache for 80B-class model at 256K is large; spec preset uses `ctx_size: 65536` for this cell already
+- Check `ctx_size`: the KV cache for an 80B-class model at 256K is large; the spec preset already uses `ctx_size: 65536` for this cell
 - Check `vm.swappiness` and disable swap to confirm not silently paging
 - Check `dmesg | tail` for OOM kills
 
 - [ ] **Step 3: Verify the unlock**
 
-If tok/s ≥ 5 and quality outputs sane: **the RAM-as-second-axis story works**. Document it.
+If tok/s ≥ 5 and the quality outputs are sane, the RAM-as-second-axis result holds. Document it.
 
 If tok/s < 5 but model loads: marginal win, document with measured numbers.
 
-If model fails to load at all: this cell is `OOM` — record the failure, document the threshold.
+If model fails to load at all: this cell is `OOM`; record the failure and document the threshold.
 
 - [ ] **Step 4: Commit**
 
@@ -3757,18 +3757,18 @@ git commit -m "8GB/64GB-RAM unlock — Qwen3-Next-80B-A3B (or OOM record)"
 
 ### Task 29: Decision check on 128GB stretch
 
-**Files:** none — decision point.
+**Files:** none; decision point.
 
 - [ ] **Step 1: Read 80B-A3B unlock results**
 
-If 80B-A3B at 64GB RAM gave tok/s ≥ 8 and quality holds up, **proceed to 128GB stretch**. The next cohort of MoEs to test:
-- Phi-3.5-MoE-instruct (60B/6.6B active) — 6.6B active fits 8GB? Tight; verify
-- GRIN-MoE (60B/6.6B active) — same constraint
+If 80B-A3B at 64GB RAM gave tok/s ≥ 8 and quality holds up, proceed to the 128GB stretch. The next cohort of MoEs to test:
+- Phi-3.5-MoE-instruct (60B/6.6B active): does 6.6B active fit 8GB? Tight; verify
+- GRIN-MoE (60B/6.6B active): same constraint
 - Larger Qwen MoEs if released
 
-If 80B-A3B at 64GB RAM was < 8 tok/s or unstable: **stop here**. The 128GB upgrade does not buy enough for the cost. Document the decision and skip Tasks 30-31.
+If 80B-A3B at 64GB RAM was < 8 tok/s or unstable: stop here. The 128GB upgrade does not buy enough for the cost. Document the decision and skip Tasks 30-31.
 
-- [ ] **Step 2: If proceeding — source 4×32GB DDR4 ECC RDIMM (~$240) and swap**
+- [ ] **Step 2: If proceeding: source 4×32GB DDR4 ECC RDIMM (~$240) and swap**
 
 Same hardware swap process as Task 27. Verify with `free -g` showing ~128GB total.
 
@@ -3788,7 +3788,7 @@ Edit `scripts/moe/generate_cells.py` `MATRIX` list to add e.g.:
 
 Re-run `generate_cells.py`, run the new cells, commit.
 
-This is a stretch task — keep it tightly scoped.
+This is a stretch task, so keep it tightly scoped.
 
 ---
 
@@ -3955,18 +3955,18 @@ git commit -m "Add results aggregator and write summary tables"
 
 - [ ] **Step 1: Draft the writeup**
 
-Write `docs/moe-on-a-budget.md` with these sections (use **actual measured numbers from `results/moe-budget/summary.json`** — placeholders are NOT acceptable):
+Write `docs/moe-on-a-budget.md` with these sections, using actual measured numbers from `results/moe-budget/summary.json`; placeholders are not acceptable:
 
-1. **The thesis** — VRAM holds active; RAM holds total
+1. **The thesis:** VRAM holds active; RAM holds total
 2. **The five flags (recipe summary, link to `the-five-flags.md`)**
-3. **2GB tier walkthrough** — table of OLMoE vs TinyLlama on MMLU/GSM8K/HellaSwag/TruthfulQA/ARC, plus tok/s, plus a one-paragraph finding
-4. **4GB tier walkthrough** — does 30B-A3B fit a 1050 Ti? table + finding
-5. **6GB tier walkthrough** — article reproduction confirmation, plus per-flag attribution table from flag-sweep
-6. **8GB tier walkthrough** — sleeper card story, plus 24GB→64GB RAM unlock
-7. **Cross-tier findings** — speedup-per-flag chart, RAM-as-second-axis chart
-8. **What didn't work** — speculative decoding (note from spec/article)
-9. **Transfer to V100** — placeholder section (filled if Task 33 happens)
-10. **AI-last frame** — closing message
+3. **2GB tier walkthrough:** table of OLMoE vs TinyLlama on MMLU/GSM8K/HellaSwag/TruthfulQA/ARC, plus tok/s, plus a one-paragraph finding
+4. **4GB tier walkthrough:** does 30B-A3B fit a 1050 Ti? table + finding
+5. **6GB tier walkthrough:** article reproduction confirmation, plus per-flag attribution table from flag-sweep
+6. **8GB tier walkthrough:** sleeper card result, plus 24GB→64GB RAM unlock
+7. **Cross-tier findings:** speedup-per-flag chart, RAM-as-second-axis chart
+8. **What didn't work:** speculative decoding (note from spec/article)
+9. **Transfer to V100:** placeholder section (filled if Task 33 happens)
+10. **AI-last frame:** closing message
 
 - [ ] **Step 2: Verify all numbers come from real result files**
 
@@ -3993,14 +3993,14 @@ git commit -m "Write moe-on-a-budget docs page with measured findings"
 
 Write `docs/the-five-flags.md` with structure:
 
-1. **TL;DR** — one Docker command containing all five flags, copy-pasteable
-2. **Flag 1: `--n-cpu-moe N`** — what it does, when to use, how to tune
-3. **Flag 2: `--no-mmap`** — what, when, RAM cost
-4. **Flag 3: VRAM tuning of `--n-cpu-moe`** — how to find the sweet spot
-5. **Flag 4: Turbo Quant KV (`--cache-type-k q4_0 --cache-type-v q3_0`)** — what, why GQA matters, when to skip
-6. **Flag 5: `--mlock`** — what, container/Docker prerequisites, what it prevents
-7. **Per-flag measured impact table** — pulled from 6GB sweep
-8. **What we tried that didn't work** — speculative decoding regression, brief
+1. **TL;DR:** one Docker command containing all five flags, copy-pasteable
+2. **Flag 1: `--n-cpu-moe N`:** what it does, when to use, how to tune
+3. **Flag 2: `--no-mmap`:** what, when, RAM cost
+4. **Flag 3: VRAM tuning of `--n-cpu-moe`:** how to find the sweet spot
+5. **Flag 4: Turbo Quant KV (`--cache-type-k q4_0 --cache-type-v q3_0`):** what, why GQA matters, when to skip
+6. **Flag 5: `--mlock`:** what, container/Docker prerequisites, what it prevents
+7. **Per-flag measured impact table:** pulled from 6GB sweep
+8. **What we tried that didn't work:** speculative decoding regression, brief
 
 - [ ] **Step 2: Commit**
 
@@ -4019,7 +4019,7 @@ git commit -m "Write the-five-flags standalone recipe doc"
 
 - [ ] **Step 1: Update README.md tier table**
 
-Open `README.md`. Find the existing tier table. Add a new column **"Best MoE that fits"** with measured top MoE per tier (e.g., 2GB → OLMoE-1B-7B with MMLU score; 6GB → Qwen3-30B-A3B with article-reproduction tok/s).
+Open `README.md`. Find the existing tier table. Add a new column **"Best MoE that fits"** with the measured top MoE per tier (e.g., OLMoE-1B-7B with its MMLU score at 2GB, Qwen3-30B-A3B with article-reproduction tok/s at 6GB).
 
 Add after the tier table:
 
@@ -4059,7 +4059,7 @@ git commit -m "Surface MoE-budget findings in README tier table and docs nav"
 
 ### Task 34: Repository integrity check
 
-**Files:** none modified — verification only.
+**Files:** none modified; verification only.
 
 - [ ] **Step 1: Verify no placeholder text in committed deliverables**
 
@@ -4087,7 +4087,7 @@ Expected: no MISSING/EMPTY lines.
 
 - [ ] **Step 3: Verify aggregate summary covers all expected cells**
 
-Count cells in `summary.json` and compare to expected matrix size (~17 cells; some may be OOM/skipped — document each skip in the writeup):
+Count cells in `summary.json` and compare to expected matrix size (~17 cells; some may be OOM or skipped; document each skip in the writeup):
 
 ```bash
 python -c "import json; print(len(json.load(open('results/moe-budget/summary.json'))))"
@@ -4114,10 +4114,10 @@ git commit -m "Final integrity sweep — moe-budget study deliverables complete"
 
 ## Out of scope for this plan (parking lot)
 
-- **V100 32GB transfer experiment** — see spec §7. Triggered only after consumer-tier results are validated. Will be its own follow-up plan.
-- **NVMe-as-RAM-extension** — for models exceeding RAM. See spec §7 future work.
-- **MoE inference engine comparison** (vLLM, SGLang, TensorRT-LLM) — separate study.
-- **Asymmetric expert-weight quantization** — separate study.
+- **V100 32GB transfer experiment.** See spec §7. Triggered only after consumer-tier results are validated. It will be its own follow-up plan.
+- **NVMe-as-RAM-extension.** For models exceeding RAM. See spec §7 future work.
+- **MoE inference engine comparison** (vLLM, SGLang, TensorRT-LLM). Separate study.
+- **Asymmetric expert-weight quantization.** Separate study.
 
 These are documented in the spec's §11 follow-up list. Do not attempt within this plan.
 
@@ -4127,8 +4127,8 @@ These are documented in the spec's §11 follow-up list. Do not attempt within th
 
 - **Each task is a unit of work.** Mark `[x]` as you complete each step.
 - **TDD discipline:** never commit production code before its test passes.
-- **Frequent commits:** commit at the end of every task, not less often. The plan's commit messages are starter copy — refine if useful.
+- **Frequent commits:** commit at the end of every task, not less often. The plan's commit messages are starter copy; refine them if useful.
 - **When a task fails:** investigate. Do not delete the failing test or skip the step. The plan's value comes from honest negative-result reporting.
-- **Long-running benchmarks** can be kicked off and walked away from — the rig is dedicated. Use `tmux` or `screen` for headless runs.
-- **If a hardware swap fails** (e.g., GTX 950 doesn't run Q4_K_M MoE) — document the failure in the writeup, drop that tier from primary scope, continue with the rest.
+- **Long-running benchmarks** can be kicked off and walked away from because the rig is dedicated. Use `tmux` or `screen` for headless runs.
+- **If a hardware swap fails** (e.g., the GTX 950 does not run Q4_K_M MoE), document the failure in the writeup, drop that tier from primary scope, and continue with the rest.
 

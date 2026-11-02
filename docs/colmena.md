@@ -28,26 +28,26 @@ Colmena is the dedicated hardware platform used for all loco-banco benchmarks. U
 | 16GB | RTX 4060 Ti 16GB | 288 GB/s | Ada Lovelace | Yes | Floor of 16GB consumer tier |
 | 16GB | Tesla P100 | 732 GB/s | Pascal | No | 16GB server tier; adapter training |
 | 16GB | Tesla V100 16GB | 900 GB/s | Volta | Yes | 16GB server tier; HBM2 + Tensor Cores (home lab) |
-| 24GB | RTX 3090 | 936 GB/s | Ampere | Yes | Consumer ceiling — comparison benchmark |
+| 24GB | RTX 3090 | 936 GB/s | Ampere | Yes | Consumer ceiling, comparison benchmark |
 | 32GB | Tesla V100 32GB | 900 GB/s | Volta | Yes | 32GB server tier |
 
 ## Philosophy: Deliberately Constrained
 
-Colmena is a deliberately constrained machine. The i3-3220 CPU, 8GB RAM ceiling, and modest storage exist by design, not accident.
+Colmena is a deliberately constrained machine. The i3-3220 CPU, 8GB RAM ceiling, and modest storage are deliberate.
 
-The CPU's job is to boot the OS and manage the PCIe bus. The GPUs do the work. Over-speccing the host system would make Colmena a *worse* research instrument -- loco-banco benchmarks GPU capability on modest hardware, which is what most users actually have.
+The CPU's job is to boot the OS and manage the PCIe bus. The GPUs do the work. Over-speccing the host system would make Colmena a *worse* research instrument. loco-banco benchmarks GPU capability on modest hardware, which is what most users have.
 
-The RAM constraint means sequential rather than fully parallel benchmarking. Results are identical -- same hardware, same models -- the runs just don't happen simultaneously. For CloudCore inference serving, one or two active instances at a time is realistic for student load anyway.
+The RAM constraint means benchmarking one run at a time. Results stay the same, since the hardware and models do not change; the runs just don't happen simultaneously. For CloudCore inference serving, one or two active instances at a time is realistic for student load anyway.
 
 ## Why Nvidia Only?
 
-The entire local LLM toolchain -- Ollama, llama.cpp, PyTorch, bitsandbytes, Unsloth -- targets CUDA first. AMD's ROCm stack exists and is improving, but driver support is narrower, community troubleshooting is thinner, and the tooling friction is meaningfully higher. Intel Arc is earlier still. For a lab that needs to work reliably with minimal sysadmin overhead, CUDA is the only practical choice today.
+The entire local LLM toolchain (Ollama, llama.cpp, PyTorch, bitsandbytes, Unsloth) targets CUDA first. AMD's ROCm stack exists and is improving, but driver support is narrower, community troubleshooting is thinner, and the tooling friction is meaningfully higher. Intel Arc is earlier still. For a lab that needs to work reliably with minimal sysadmin overhead, CUDA is the only practical choice today.
 
-The secondhand market reinforces this. The cryptocurrency mining boom flooded resale channels with Nvidia consumer cards at accessible prices. AMD equivalents at the same VRAM tiers are rarer and less standardised. And the overwhelming majority of users running local LLMs on consumer hardware are on Nvidia -- loco-banco floor cards need to represent what people actually have.
+The secondhand market reinforces this. The cryptocurrency mining boom flooded resale channels with Nvidia consumer cards at accessible prices. AMD equivalents at the same VRAM tiers are rarer and less standardised. Most people running local LLMs on consumer hardware use Nvidia, so loco-banco floor cards need to represent what they have.
 
-Apple Silicon is the exception, and Poco covers that path via Metal and MLX. If ROCm matures to the point where an AMD card is a genuine drop-in for Ollama inference, it becomes a candidate for a Colmena slot. That day isn't today.
+Apple Silicon is the exception, and Poco covers that path via Metal and MLX. If ROCm matures to the point where an AMD card is a genuine drop-in for Ollama inference, it becomes a candidate for a Colmena slot. That has not happened yet.
 
-What matters for replication is capability tier, not specific parts. Match the VRAM range and CUDA support, source whatever is available locally at the time.
+For replication, match the VRAM range and CUDA support, then source whatever is available locally. The capability tier matters more than the specific parts.
 
 ## Colmena as Reference Baseline
 
@@ -63,15 +63,15 @@ Community submissions extend each tier upward. The bandwidth delta within each t
 
 ### Why the RTX 3090?
 
-The 3090 sits outside the affordable range for most LocoBanco users. It is included not as a recommendation but as a **comparison ceiling** -- the answer to "what am I missing out on by staying in the affordable tiers?"
+The 3090 sits outside the affordable range for most LocoBanco users. It is here as a **comparison ceiling**: the answer to "what am I missing out on by staying in the affordable tiers?"
 
 - 24 GB VRAM is the consumer ceiling for secondhand GPUs
 - Validates whether floor-tier results scale predictably upward
-- 936 GB/s bandwidth provides genuinely interesting comparative data against the affordable cards
-- Most LocoBanco users have 8 GB cards or less -- the 3090 result tells them what they're leaving on the table, and in many cases the answer will be "not as much as you'd think"
+- 936 GB/s bandwidth provides useful comparison data against the affordable cards
+- Most LocoBanco users have 8 GB cards or less: the 3090 result tells them what they're leaving on the table, and in many cases the answer will be "not as much as you'd think"
 
 ### Why the Server GPUs?
 
-The Tesla P100 (16 GB), V100 16 GB, and V100 32 GB round out the affordable end of the datacenter GPU secondhand market. These are cards that institutions and hobbyists can realistically acquire -- HBM2 bandwidth that rivals or exceeds consumer cards, at prices that make them genuinely accessible. They lack display outputs and require adequate cooling, but for headless inference servers they are compelling.
+The Tesla P100 (16 GB), V100 16 GB, and V100 32 GB round out the affordable end of the datacenter GPU secondhand market. These are cards that institutions and hobbyists can realistically acquire: HBM2 bandwidth that rivals or exceeds consumer cards, at prices that make them accessible. They lack display outputs and require adequate cooling, but for headless inference servers they are worth considering.
 
-The server GPUs test a different question than the consumer cards: **does HBM2 bandwidth compensate for older architecture?** The P100 has no Tensor Cores but 732 GB/s bandwidth -- faster than every consumer card below the 3090. The V100s add Tensor Cores and 900 GB/s bandwidth. At the 16 GB tier, three cards with the same VRAM but wildly different architectures (Ada Lovelace, Pascal, Volta) make the cleanest test in the lineup for isolating what actually drives inference speed.
+The server GPUs test a different question than the consumer cards: does HBM2 bandwidth compensate for older architecture? The P100 has no Tensor Cores but 732 GB/s bandwidth, faster than every consumer card below the 3090. The V100s add Tensor Cores and 900 GB/s bandwidth. At the 16 GB tier, three cards with the same VRAM but very different architectures (Ada Lovelace, Pascal, Volta) make the cleanest test in the lineup for isolating what drives inference speed.

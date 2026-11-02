@@ -2,15 +2,15 @@
 title: "Bang per Bit"
 ---
 
-The core analysis: **how much capability do you get per byte of model weight?** This is the question that matters for deployment on constrained hardware. A 1B model at Q8_0 and a 4B model at Q2_K might be similar sizes -- but which one is actually better?
+The core analysis: how much capability do you get per byte of model weight? This question matters for deployment on constrained hardware. A 1B model at Q8_0 and a 4B model at Q2_K might be similar sizes. Which one is better?
 
 :::tip[The Pareto Frontier]
-The Pareto frontier represents the **efficient set** -- model+quant combinations where you can't improve quality without increasing size, and can't reduce size without losing quality. Every point *on* the frontier is optimal; every point *below* it is dominated by something smaller or better.
+The Pareto frontier is the **efficient set**: model+quant combinations where you can't improve quality without increasing size, and can't reduce size without losing quality. Every point *on* the frontier is optimal; every point *below* it is dominated by something smaller or better.
 :::
 
 ## Pareto Frontier: Quality vs Size
 
-The scatter shows all 112 variants. The frontier (orange line) highlights the optimal choices at each size budget.
+The scatter shows all 112 variants. The frontier (orange line) shows the optimal choices at each size budget.
 
 <div id="chart-efficiency-pareto" class="plotly-chart"></div>
 
@@ -30,8 +30,8 @@ Which tasks suffer most from quantization? This heatmap shows the percentage of 
 
 ## Takeaways for Model Selection
 
-1. **If you have 2+ GB of RAM**: A 4B model at Q4_K_M is almost always the best choice -- it sits on or near the Pareto frontier for quality/size
+1. **If you have 2+ GB of RAM**: A 4B model at Q4_K_M is almost always the best choice; it sits on or near the Pareto frontier for quality/size
 2. **If you have < 1.5 GB**: A 1.7B model at Q4_K_M outperforms a 4B model at Q2_K despite being the same size
-3. **For math/reasoning tasks**: Prefer larger models at moderate quantization over smaller models at high precision -- reasoning ability scales with parameters, not precision
+3. **For math/reasoning tasks**: Prefer larger models at moderate quantization over smaller models at high precision. Reasoning ability scales with parameters more than with precision
 4. **For interactive use (>5 t/s)**: 1B-1.7B models at Q4_K_M are the sweet spot on CPU-only hardware
 5. **Never use Q2_K in production**: Quality collapses across the board; it's useful only as a lower bound for analysis

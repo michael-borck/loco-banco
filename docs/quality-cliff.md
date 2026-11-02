@@ -4,9 +4,9 @@ Most inference guides recommend a "4 GB minimum" as received wisdom. loco-banco 
 
 ## Methodology
 
-The same 15 prompts -- spanning reasoning, factual recall, instruction following, and multi-step tasks -- will be run at every VRAM tier using the best-fit model for that tier at Q4 quantisation. Results will be scored for coherence and accuracy and published as a comparable chart.
+The same 15 prompts, spanning reasoning, factual recall, instruction following, and multi-step tasks, will be run at every VRAM tier using the best-fit model for that tier at Q4 quantisation. Results will be scored for coherence and accuracy and published as a comparable chart.
 
-The tier stack deliberately extends down to 2 GB. This is not because 2 GB is a useful inference target -- it isn't -- but because documenting where quality degrades and why is a research output in its own right. Most inference guides assert a "4 GB minimum" without evidence. loco-banco will show the data behind that claim.
+The tier stack deliberately extends down to 2 GB. 2 GB is not a useful inference target. The tier stays because documenting where quality degrades and why is a research output in its own right. Most inference guides assert a "4 GB minimum" without evidence; loco-banco will show the data behind that claim.
 
 ## Expected Results
 
@@ -20,7 +20,7 @@ The tier stack deliberately extends down to 2 GB. This is not because 2 GB is a 
 | 12 GB | Llama3 13B Q4 | Clear quality improvement. Longer coherent context. |
 | 24 GB | Llama3 70B Q4 | Ceiling of consumer hardware usefulness. |
 
-The goal is not to confirm the obvious -- it is to show *where* the cliff is steep and where it is gradual. The 2 GB to 3 GB jump and the 3 GB to 4 GB jump may tell very different stories. That granularity is what makes running the full tier stack worthwhile.
+The goal is to show *where* the cliff is steep and where it is gradual. The 2 GB to 3 GB jump and the 3 GB to 4 GB jump may tell very different stories, which is why the full tier stack is worth running.
 
 ## Connection to Adapter Training
 

@@ -2,15 +2,15 @@
 title: "Benchmarking Guide"
 ---
 
-This document covers how to run LocoBanco benchmarks, what hardware to use, and how to produce the "bang per bit" analysis that fills a genuine gap in the literature.
+This document covers how to run LocoBanco benchmarks, what hardware to use, and how to produce the "bang per bit" analysis that fills a gap in the literature.
 
 ## What We're Measuring and Why
 
-Most published benchmarks evaluate full-precision models on cloud hardware. Nobody systematically compares everything that fits within a given VRAM budget -- full-precision small models against quantized larger models -- on consumer hardware. That's the gap LocoBanco fills.
+Most published benchmarks evaluate full-precision models on cloud hardware. Nobody systematically compares everything that fits within a given VRAM budget (full-precision small models against quantized larger models) on consumer hardware. That's the gap LocoBanco fills.
 
-We're running two distinct benchmarks that serve different purposes:
+We're running two distinct benchmarks for different purposes:
 
-**Benchmark A: "What's best for my VRAM budget?"** Within each VRAM tier (4GB, 6GB, 8GB, 12GB, 16GB, 24GB, 32GB), compare every model that fits -- whether full-precision or quantized -- on standard tasks. This answers which model+precision combination gives the most capability for a given hardware constraint.
+**Benchmark A: "What's best for my VRAM budget?"** Within each VRAM tier (4GB, 6GB, 8GB, 12GB, 16GB, 24GB, 32GB), compare every model that fits, whether full-precision or quantized, on standard tasks. This answers which model+precision combination gives the most capability for a given hardware constraint.
 
 **Benchmark B: "What's the real user experience?"** Run the top models per tier on actual target hardware and measure tokens/sec, time-to-first-token, and memory usage alongside quality. This connects quality numbers to deployment reality.
 
