@@ -6,7 +6,8 @@
     "clean": "rm -rf dist .astro node_modules/.astro",
     "build": "find src/content -name '._*' -delete || true; astro build",
     "rebuild": "npm run clean && npm run build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "validate:results": "node scripts/validate-results.mjs"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.34",

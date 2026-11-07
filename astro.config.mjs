@@ -44,12 +44,14 @@ export default defineConfig({
               { label: 'Benchmark Hardware', slug: 'colmena' },
               { label: 'GPU Inventory', slug: 'gpu-inventory' },
               { label: 'VRAM Tiers', slug: 'tiers' },
+              { label: 'GPU Picker', link: '/picker/' },
             ],
           },
           {
             label: 'Guide',
             items: [
               { label: 'Benchmarking Guide', slug: 'guide' },
+              { label: 'Result Contract', slug: 'result-contract' },
               { label: 'Advanced Reference', slug: 'advanced-reference' },
             ],
           },

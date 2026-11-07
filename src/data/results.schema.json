@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://locobanco.org/schema/results.schema.json",
+  "title": "LocoLabo benchmark result dataset",
+  "description": "Shared result contract for LocoLabo benchmark projects (LocoBanco, LocoFósil, LocoMusa) and the GPU picker. Every result carries a confidence level so estimated values can never be mistaken for measurements.",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "benchmarks", "gpus"],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "generated_at": { "type": "string", "description": "ISO date or date-time." },
+    "notes": { "type": "string" },
+    "benchmarks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/benchmark" }
+    },
+    "gpus": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/gpu" }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "confidence": {
+      "enum": ["measured", "community", "estimated"],
+      "description": "measured: the harness ran on this card. community: an external contributor supplied it. estimated: inferred from specs, no run."
+    },
+    "benchmark": {
+      "type": "object",
+      "required": ["id", "display_name", "higher_is_better"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "display_name": { "type": "string" },
+        "short_name": { "type": "string" },
+        "model": { "type": "string" },
+        "quantisation": { "type": "string" },
+        "framework": { "type": "string" },
+        "category": { "type": "string" },
+        "metric_units": { "type": "string" },
+        "higher_is_better": { "type": "boolean" },
+        "model_vram_gb": { "type": "number" }
+      },
+      "additionalProperties": true
+    },
+    "gpuResult": {
+      "type": "object",
+      "required": ["value", "confidence"],
+      "properties": {
+        "value": { "type": "number" },
+        "confidence": { "$ref": "#/$defs/confidence" },
+        "tested_on": { "type": "string" },
+        "source_run_id": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "gpu": {
+      "type": "object",
+      "required": ["id", "display_name", "vram_gb", "cc", "results"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "display_name": { "type": "string" },
+        "vendor": { "type": "string" },
+        "class": { "type": "string" },
+        "architecture": { "type": "string" },
+        "cc": { "type": "number" },
+        "release_year": { "type": "integer" },
+        "vram_gb": { "type": "number" },
+        "memory": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string" },
+            "bandwidth_gb_s": { "type": "number" },
+            "bus_bits": { "type": "integer" }
+          },
+          "additionalProperties": true
+        },
+        "tensor_cores": {
+          "type": "object",
+          "properties": { "present": { "type": "boolean" } },
+          "additionalProperties": true
+        },
+        "power_draw_w": { "type": "number" },
+        "form_factor": { "type": "string" },
+        "cost_bracket": { "type": "string" },
+        "status": { "type": "string" },
+        "notes": { "type": "string" },
+        "results": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/gpuResult" }
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

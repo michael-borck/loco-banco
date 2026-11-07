@@ -1,0 +1,1136 @@
+{
+  "schema_version": "0.1",
+  "generated_at": "2026-04-18",
+  "notes": "v0.1 prototype data: hand-authored plausible numbers, not real LocoBench measurements. All values are marked estimated until real harness output replaces them. Migrated into LocoBanco for Phase 4; validated by scripts/validate-results.mjs.",
+  "currencies": {
+    "usd": {
+      "code": "USD",
+      "symbol": "$",
+      "from_usd": 1.0
+    },
+    "aud": {
+      "code": "AUD",
+      "symbol": "$",
+      "from_usd": 1.54
+    }
+  },
+  "cost_brackets": [
+    {
+      "code": "$",
+      "usd_low": 25,
+      "usd_high": 65,
+      "disclaimer": "Secondhand only. Thin supply, erratic pricing, patience required — watch eBay / Gumtree / Marketplace for weeks. Prices do not include postage."
+    },
+    {
+      "code": "$$",
+      "usd_low": 65,
+      "usd_high": 165,
+      "disclaimer": "Secondhand. Usually available within a few weeks of watching. Prices do not include postage."
+    },
+    {
+      "code": "$$$",
+      "usd_low": 165,
+      "usd_high": 330,
+      "disclaimer": "Mix of secondhand and newer budget cards. Secondhand postage excluded."
+    },
+    {
+      "code": "$$$$",
+      "usd_low": 330,
+      "usd_high": 665,
+      "disclaimer": "Near-new or current-gen mid-range. Secondhand postage excluded."
+    },
+    {
+      "code": "$$$$$",
+      "usd_low": 665,
+      "usd_high": null,
+      "disclaimer": "New pricing for current-gen flagships."
+    }
+  ],
+  "benchmarks": [
+    {
+      "id": "llama_3_1_8b_q4_km_tps",
+      "display_name": "Llama 3.1 8B Q4_K_M — tokens/sec",
+      "short_name": "Llama 3.1 8B Q4",
+      "model": "llama-3.1-8b-instruct",
+      "quantisation": "Q4_K_M",
+      "framework": "ollama",
+      "category": "throughput",
+      "metric_units": "tokens/sec",
+      "higher_is_better": true,
+      "model_vram_gb": 4.5
+    },
+    {
+      "id": "llama_3_1_13b_q4_km_tps",
+      "display_name": "Llama 3.1 13B Q4_K_M — tokens/sec",
+      "short_name": "Llama 3.1 13B Q4",
+      "model": "llama-3.1-13b-instruct",
+      "quantisation": "Q4_K_M",
+      "framework": "ollama",
+      "category": "throughput",
+      "metric_units": "tokens/sec",
+      "higher_is_better": true,
+      "model_vram_gb": 8.0
+    },
+    {
+      "id": "qwen_2_5_7b_q4_km_tps",
+      "display_name": "Qwen 2.5 7B Q4_K_M — tokens/sec",
+      "short_name": "Qwen 2.5 7B Q4",
+      "model": "qwen2.5-7b-instruct",
+      "quantisation": "Q4_K_M",
+      "framework": "ollama",
+      "category": "throughput",
+      "metric_units": "tokens/sec",
+      "higher_is_better": true,
+      "model_vram_gb": 4.3
+    },
+    {
+      "id": "mmlu_score",
+      "display_name": "MMLU — biggest model that fits at Q4_K_M",
+      "short_name": "MMLU (Q4 ceiling)",
+      "model": "varies-by-card",
+      "quantisation": "Q4_K_M",
+      "framework": "ollama",
+      "category": "quality",
+      "metric_units": "score (0–100)",
+      "higher_is_better": true,
+      "model_vram_gb": 0
+    }
+  ],
+  "model_shortcuts": {
+    "7B": {
+      "Q4_K_M": {
+        "vram_required_gb": 6,
+        "matching_benchmark": "qwen_2_5_7b_q4_km_tps"
+      },
+      "Q8_0": {
+        "vram_required_gb": 10,
+        "matching_benchmark": "qwen_2_5_7b_q4_km_tps"
+      },
+      "FP16": {
+        "vram_required_gb": 16,
+        "matching_benchmark": "qwen_2_5_7b_q4_km_tps"
+      }
+    },
+    "13B": {
+      "Q4_K_M": {
+        "vram_required_gb": 10,
+        "matching_benchmark": "llama_3_1_13b_q4_km_tps"
+      },
+      "Q8_0": {
+        "vram_required_gb": 16,
+        "matching_benchmark": "llama_3_1_13b_q4_km_tps"
+      },
+      "FP16": {
+        "vram_required_gb": 32,
+        "matching_benchmark": "llama_3_1_13b_q4_km_tps"
+      }
+    },
+    "30B": {
+      "Q4_K_M": {
+        "vram_required_gb": 20,
+        "matching_benchmark": "llama_3_1_13b_q4_km_tps"
+      },
+      "Q8_0": {
+        "vram_required_gb": 40,
+        "matching_benchmark": "llama_3_1_13b_q4_km_tps"
+      },
+      "FP16": {
+        "vram_required_gb": 64,
+        "matching_benchmark": "llama_3_1_13b_q4_km_tps"
+      }
+    }
+  },
+  "architecture_colors": {
+    "pascal_consumer": "#5b8def",
+    "turing_consumer": "#4bc3c3",
+    "ampere_consumer": "#b695f7",
+    "ada_consumer": "#66d9ef",
+    "blackwell_consumer": "#f97583",
+    "server": "#ffb454"
+  },
+  "gpus": [
+    {
+      "id": "gtx_950_2gb",
+      "display_name": "GTX 950",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "maxwell",
+      "cc": 5.2,
+      "release_year": 2015,
+      "vram_gb": 2,
+      "memory": {
+        "type": "gddr5",
+        "bandwidth_gb_s": 105,
+        "bus_bits": 128
+      },
+      "tensor_cores": {
+        "present": false
+      },
+      "power_draw_w": 90,
+      "form_factor": "dual_slot",
+      "cost_bracket": "$",
+      "status": "active",
+      "notes": "The absolute floor. 2 GB VRAM limits you to TinyLlama-class models. Still a legitimate entry into learning local AI without spending — if it's the card you already have, you can run something here.",
+      "results": {
+        "mmlu_score": {
+          "value": 25,
+          "confidence": "estimated",
+          "notes": "TinyLlama 1.1B Q4 is about all that runs comfortably"
+        }
+      }
+    },
+    {
+      "id": "gtx_960_4gb",
+      "display_name": "GTX 960 4 GB",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "maxwell",
+      "cc": 5.2,
+      "release_year": 2015,
+      "vram_gb": 4,
+      "memory": {
+        "type": "gddr5",
+        "bandwidth_gb_s": 112,
+        "bus_bits": 128
+      },
+      "tensor_cores": {
+        "present": false
+      },
+      "power_draw_w": 120,
+      "form_factor": "dual_slot",
+      "cost_bracket": "$",
+      "status": "active",
+      "notes": "4 GB Maxwell floor. CC 5.2 clears Ollama but falls below the 6.0 threshold — no bitsandbytes, no Unsloth. Inference only via Ollama. 7B Q4 fits tight; 8B doesn't.",
+      "results": {
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 9,
+          "confidence": "estimated",
+          "notes": "Ollama scalar kernels, tight VRAM"
+        },
+        "mmlu_score": {
+          "value": 65,
+          "confidence": "estimated",
+          "notes": "Phi-3 Mini or Qwen 2.5 7B Q4 (tight)"
+        }
+      }
+    },
+    {
+      "id": "gtx_1050_ti_4gb",
+      "display_name": "GTX 1050 Ti",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "pascal",
+      "cc": 6.1,
+      "release_year": 2016,
+      "vram_gb": 4,
+      "memory": {
+        "type": "gddr5",
+        "bandwidth_gb_s": 112,
+        "bus_bits": 128
+      },
+      "tensor_cores": {
+        "present": false
+      },
+      "power_draw_w": 75,
+      "form_factor": "low_profile",
+      "cost_bracket": "$",
+      "status": "active",
+      "notes": "4 GB Pascal with a 75W ceiling — no external power, slots into any office PC. Pascal compute 6.1 runs the full modern inference stack. Runs 7B Q4 with modest context.",
+      "results": {
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 12,
+          "confidence": "estimated"
+        },
+        "mmlu_score": {
+          "value": 67,
+          "confidence": "estimated",
+          "notes": "Phi-3 Mini or Qwen 2.5 7B Q4"
+        }
+      }
+    },
+    {
+      "id": "gtx_1060_3gb",
+      "display_name": "GTX 1060 3 GB",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "pascal",
+      "cc": 6.1,
+      "release_year": 2016,
+      "vram_gb": 3,
+      "memory": {
+        "type": "gddr5",
+        "bandwidth_gb_s": 192,
+        "bus_bits": 192
+      },
+      "tensor_cores": {
+        "present": false
+      },
+      "power_draw_w": 120,
+      "form_factor": "dual_slot",
+      "cost_bracket": "$",
+      "status": "active",
+      "notes": "Odd 3 GB Pascal tier. 7B Q4 doesn't fit; Llama 3.2 1B or Phi-3 Mini do. Bandwidth (192 GB/s) is the saving grace — faster than a 1050 Ti when workloads fit.",
+      "results": {
+        "mmlu_score": {
+          "value": 55,
+          "confidence": "estimated",
+          "notes": "Llama 3.2 1B or Phi-3 Mini — 7B doesn't fit"
+        }
+      }
+    },
+    {
+      "id": "gtx_980_ti_6gb",
+      "display_name": "GTX 980 Ti",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "maxwell",
+      "cc": 5.2,
+      "release_year": 2015,
+      "vram_gb": 6,
+      "memory": {
+        "type": "gddr5",
+        "bandwidth_gb_s": 336,
+        "bus_bits": 384
+      },
+      "tensor_cores": {
+        "present": false
+      },
+      "power_draw_w": 250,
+      "form_factor": "dual_slot",
+      "cost_bracket": "$$",
+      "status": "active",
+      "notes": "Maxwell flagship with outlier bandwidth — 336 GB/s at CC 5.2. Faster than the GTX 1060 6 GB despite being a generation older, thanks to the wide memory bus. Ollama only (no modern quantisation kernels).",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 30,
+          "confidence": "estimated"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 33,
+          "confidence": "estimated"
+        },
+        "mmlu_score": {
+          "value": 68,
+          "confidence": "estimated",
+          "notes": "Llama 3.1 8B Q4_K_M fits"
+        }
+      }
+    },
+    {
+      "id": "gtx_titan_x_maxwell_12gb",
+      "display_name": "GTX Titan X (Maxwell)",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "maxwell",
+      "cc": 5.2,
+      "release_year": 2015,
+      "vram_gb": 12,
+      "memory": {
+        "type": "gddr5",
+        "bandwidth_gb_s": 336,
+        "bus_bits": 384
+      },
+      "tensor_cores": {
+        "present": false
+      },
+      "power_draw_w": 250,
+      "form_factor": "dual_slot",
+      "cost_bracket": "$$",
+      "status": "active",
+      "notes": "12 GB Maxwell — a rare combination. CC 5.2 means Ollama only. Bandwidth is modest for the VRAM tier, but 12 GB at this price point and era is compelling if you accept the toolchain limits.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 30,
+          "confidence": "estimated"
+        },
+        "llama_3_1_13b_q4_km_tps": {
+          "value": 17,
+          "confidence": "estimated"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 33,
+          "confidence": "estimated"
+        },
+        "mmlu_score": {
+          "value": 70,
+          "confidence": "estimated",
+          "notes": "13B Q4_K_M fits"
+        }
+      }
+    },
+    {
+      "id": "gtx_1060_6gb",
+      "display_name": "GTX 1060 6 GB",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "pascal",
+      "cc": 6.1,
+      "release_year": 2016,
+      "vram_gb": 6,
+      "memory": {
+        "type": "gddr5",
+        "bandwidth_gb_s": 192,
+        "bus_bits": 192
+      },
+      "tensor_cores": {
+        "present": false
+      },
+      "power_draw_w": 120,
+      "form_factor": "dual_slot",
+      "cost_bracket": "$",
+      "status": "active",
+      "notes": "Pre-Tensor-Core Pascal. 6 GB is a tight fit for 8B Q4 — plan for modest context. Cheapest entry into serious local inference.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 18,
+          "confidence": "estimated",
+          "notes": "Scaled from 1060 6GB community reports"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 20,
+          "confidence": "estimated"
+        },
+        "mmlu_score": {
+          "value": 64,
+          "confidence": "estimated",
+          "notes": "At this VRAM tier, Llama 3.2 3B / Phi-3 Mini / Qwen 2.5 7B Q4 tight"
+        }
+      }
+    },
+    {
+      "id": "gtx_1080_ti",
+      "display_name": "GTX 1080 Ti",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "pascal",
+      "cc": 6.1,
+      "release_year": 2017,
+      "vram_gb": 11,
+      "memory": {
+        "type": "gddr5x",
+        "bandwidth_gb_s": 484,
+        "bus_bits": 352
+      },
+      "tensor_cores": {
+        "present": false
+      },
+      "power_draw_w": 250,
+      "form_factor": "dual_slot",
+      "cost_bracket": "$$",
+      "status": "active",
+      "notes": "Pascal flagship. 484 GB/s bandwidth still holds up; 11 GB unlocks 13B Q4_K_M. No Tensor Cores limits training paths.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 55,
+          "confidence": "estimated",
+          "tested_on": "2026-03-12"
+        },
+        "llama_3_1_13b_q4_km_tps": {
+          "value": 32,
+          "confidence": "estimated",
+          "tested_on": "2026-03-12"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 60,
+          "confidence": "estimated",
+          "tested_on": "2026-03-12"
+        },
+        "mmlu_score": {
+          "value": 68,
+          "confidence": "estimated"
+        }
+      }
+    },
+    {
+      "id": "rtx_2060_super_8gb",
+      "display_name": "RTX 2060 Super",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "turing",
+      "cc": 7.5,
+      "release_year": 2019,
+      "vram_gb": 8,
+      "memory": {
+        "type": "gddr6",
+        "bandwidth_gb_s": 448,
+        "bus_bits": 256
+      },
+      "tensor_cores": {
+        "present": true,
+        "generation": 1
+      },
+      "power_draw_w": 175,
+      "form_factor": "dual_slot",
+      "cost_bracket": "$$",
+      "status": "active",
+      "notes": "Tensor-Core sleeper. Faster than the 3060, 3070, or 4060 Ti for anything that fits in 8 GB. The Pareto-frontier card at its price point.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 62,
+          "confidence": "estimated",
+          "tested_on": "2026-03-28"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 68,
+          "confidence": "estimated",
+          "tested_on": "2026-03-28"
+        },
+        "mmlu_score": {
+          "value": 68,
+          "confidence": "estimated"
+        }
+      }
+    },
+    {
+      "id": "rtx_3050_8gb",
+      "display_name": "RTX 3050 8 GB",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "ampere",
+      "cc": 8.6,
+      "release_year": 2022,
+      "vram_gb": 8,
+      "memory": {
+        "type": "gddr6",
+        "bandwidth_gb_s": 224,
+        "bus_bits": 128
+      },
+      "tensor_cores": {
+        "present": true,
+        "generation": 2
+      },
+      "power_draw_w": 130,
+      "form_factor": "dual_slot",
+      "cost_bracket": "$$",
+      "status": "active",
+      "notes": "Cheapest new-generation Tensor-Core card. Low bandwidth (224 GB/s) makes it slower than the older 2060 Super for 8 GB workloads, but it is a genuine modern-architecture entry point with adapter-training compatibility.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 32,
+          "confidence": "estimated"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 35,
+          "confidence": "estimated"
+        },
+        "mmlu_score": {
+          "value": 68,
+          "confidence": "estimated"
+        }
+      }
+    },
+    {
+      "id": "rtx_3060_12gb",
+      "display_name": "RTX 3060 12 GB",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "ampere",
+      "cc": 8.6,
+      "release_year": 2021,
+      "vram_gb": 12,
+      "memory": {
+        "type": "gddr6",
+        "bandwidth_gb_s": 360,
+        "bus_bits": 192
+      },
+      "tensor_cores": {
+        "present": true,
+        "generation": 2
+      },
+      "power_draw_w": 170,
+      "form_factor": "dual_slot",
+      "cost_bracket": "$$",
+      "status": "active",
+      "notes": "Cheapest 12 GB Tensor-Core card. Counterintuitive: slower than 2060 Super for 8 GB workloads because of the lower bandwidth. Buy it for the VRAM headroom, not raw tokens/sec.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 42,
+          "confidence": "estimated",
+          "tested_on": "2026-04-01"
+        },
+        "llama_3_1_13b_q4_km_tps": {
+          "value": 24,
+          "confidence": "estimated",
+          "tested_on": "2026-04-01"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 46,
+          "confidence": "estimated",
+          "tested_on": "2026-04-01"
+        },
+        "mmlu_score": {
+          "value": 70,
+          "confidence": "estimated"
+        }
+      }
+    },
+    {
+      "id": "rtx_3070_ti_8gb",
+      "display_name": "RTX 3070 Ti",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "ampere",
+      "cc": 8.6,
+      "release_year": 2021,
+      "vram_gb": 8,
+      "memory": {
+        "type": "gddr6x",
+        "bandwidth_gb_s": 608,
+        "bus_bits": 256
+      },
+      "tensor_cores": {
+        "present": true,
+        "generation": 2
+      },
+      "power_draw_w": 290,
+      "form_factor": "dual_slot",
+      "cost_bracket": "$$$",
+      "status": "active",
+      "notes": "Fast on 8 GB workloads thanks to GDDR6X. Power-hungry for the tier. 8 GB ceiling rules out 13B at Q4.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 78,
+          "confidence": "estimated",
+          "tested_on": "2026-03-20"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 86,
+          "confidence": "estimated",
+          "tested_on": "2026-03-20"
+        },
+        "mmlu_score": {
+          "value": 68,
+          "confidence": "estimated"
+        }
+      }
+    },
+    {
+      "id": "rtx_3080_12gb",
+      "display_name": "RTX 3080 12 GB",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "ampere",
+      "cc": 8.6,
+      "release_year": 2022,
+      "vram_gb": 12,
+      "memory": {
+        "type": "gddr6x",
+        "bandwidth_gb_s": 912,
+        "bus_bits": 384
+      },
+      "tensor_cores": {
+        "present": true,
+        "generation": 2
+      },
+      "power_draw_w": 350,
+      "form_factor": "dual_slot",
+      "cost_bracket": "$$$$",
+      "status": "active",
+      "notes": "Ampere sweet spot for 13B inference. Near-1 TB/s bandwidth with 12 GB VRAM.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 115,
+          "confidence": "estimated",
+          "tested_on": "2026-02-18"
+        },
+        "llama_3_1_13b_q4_km_tps": {
+          "value": 67,
+          "confidence": "estimated",
+          "tested_on": "2026-02-18"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 125,
+          "confidence": "estimated",
+          "tested_on": "2026-02-18"
+        },
+        "mmlu_score": {
+          "value": 71,
+          "confidence": "estimated"
+        }
+      }
+    },
+    {
+      "id": "rtx_3090_24gb",
+      "display_name": "RTX 3090",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "ampere",
+      "cc": 8.6,
+      "release_year": 2020,
+      "vram_gb": 24,
+      "memory": {
+        "type": "gddr6x",
+        "bandwidth_gb_s": 936,
+        "bus_bits": 384
+      },
+      "tensor_cores": {
+        "present": true,
+        "generation": 2
+      },
+      "power_draw_w": 350,
+      "form_factor": "dual_slot",
+      "cost_bracket": "$$$$",
+      "status": "active",
+      "notes": "Consumer ceiling for secondhand inference. 24 GB enables 30B at Q4. The single most-recommended card for serious local LLM work.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 135,
+          "confidence": "estimated",
+          "tested_on": "2026-04-10"
+        },
+        "llama_3_1_13b_q4_km_tps": {
+          "value": 82,
+          "confidence": "estimated",
+          "tested_on": "2026-04-10"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 145,
+          "confidence": "estimated",
+          "tested_on": "2026-04-10"
+        },
+        "mmlu_score": {
+          "value": 78,
+          "confidence": "estimated",
+          "notes": "30B at Q4_K_M"
+        }
+      }
+    },
+    {
+      "id": "rtx_4060_ti_16gb",
+      "display_name": "RTX 4060 Ti 16 GB",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "ada_lovelace",
+      "cc": 8.9,
+      "release_year": 2023,
+      "vram_gb": 16,
+      "memory": {
+        "type": "gddr6",
+        "bandwidth_gb_s": 288,
+        "bus_bits": 128
+      },
+      "tensor_cores": {
+        "present": true,
+        "generation": 3
+      },
+      "power_draw_w": 165,
+      "form_factor": "dual_slot",
+      "cost_bracket": "$$$",
+      "status": "active",
+      "notes": "Ada with a memory-bus penalty. The 128-bit bus at 288 GB/s makes it slower than the 2060 Super for anything that fits in 8 GB. The 16 GB VRAM is the only reason to buy.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 40,
+          "confidence": "estimated",
+          "tested_on": "2026-03-25"
+        },
+        "llama_3_1_13b_q4_km_tps": {
+          "value": 23,
+          "confidence": "estimated",
+          "tested_on": "2026-03-25"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 44,
+          "confidence": "estimated",
+          "tested_on": "2026-03-25"
+        },
+        "mmlu_score": {
+          "value": 71,
+          "confidence": "estimated"
+        }
+      }
+    },
+    {
+      "id": "rtx_4070_super_12gb",
+      "display_name": "RTX 4070 Super",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "ada_lovelace",
+      "cc": 8.9,
+      "release_year": 2024,
+      "vram_gb": 12,
+      "memory": {
+        "type": "gddr6x",
+        "bandwidth_gb_s": 504,
+        "bus_bits": 192
+      },
+      "tensor_cores": {
+        "present": true,
+        "generation": 3
+      },
+      "power_draw_w": 220,
+      "form_factor": "dual_slot",
+      "cost_bracket": "$$$$",
+      "status": "active",
+      "notes": "Reasonable Ada 12 GB card. Bandwidth is OK not great; best value is buying new with warranty.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 88,
+          "confidence": "estimated",
+          "notes": "Community-submitted"
+        },
+        "llama_3_1_13b_q4_km_tps": {
+          "value": 52,
+          "confidence": "estimated"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 95,
+          "confidence": "estimated"
+        },
+        "mmlu_score": {
+          "value": 71,
+          "confidence": "estimated"
+        }
+      }
+    },
+    {
+      "id": "rtx_4090_24gb",
+      "display_name": "RTX 4090",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "ada_lovelace",
+      "cc": 8.9,
+      "release_year": 2022,
+      "vram_gb": 24,
+      "memory": {
+        "type": "gddr6x",
+        "bandwidth_gb_s": 1008,
+        "bus_bits": 384
+      },
+      "tensor_cores": {
+        "present": true,
+        "generation": 3
+      },
+      "power_draw_w": 450,
+      "form_factor": "triple_slot",
+      "cost_bracket": "$$$$$",
+      "status": "active",
+      "notes": "Ada flagship. 1 TB/s bandwidth with 24 GB. Expensive but the most capable single consumer card before Blackwell.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 165,
+          "confidence": "estimated"
+        },
+        "llama_3_1_13b_q4_km_tps": {
+          "value": 95,
+          "confidence": "estimated"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 180,
+          "confidence": "estimated"
+        },
+        "mmlu_score": {
+          "value": 78,
+          "confidence": "estimated"
+        }
+      }
+    },
+    {
+      "id": "rtx_5080_16gb",
+      "display_name": "RTX 5080",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "blackwell",
+      "cc": 10.0,
+      "release_year": 2025,
+      "vram_gb": 16,
+      "memory": {
+        "type": "gddr7",
+        "bandwidth_gb_s": 960,
+        "bus_bits": 256
+      },
+      "tensor_cores": {
+        "present": true,
+        "generation": 5
+      },
+      "power_draw_w": 360,
+      "form_factor": "dual_slot",
+      "cost_bracket": "$$$$$",
+      "status": "active",
+      "notes": "Blackwell mid-tier. GDDR7 at 960 GB/s beats the 4090 on throughput despite 16 GB vs 24 GB VRAM. FP4 kernel support coming in frameworks.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 145,
+          "confidence": "estimated"
+        },
+        "llama_3_1_13b_q4_km_tps": {
+          "value": 85,
+          "confidence": "estimated"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 160,
+          "confidence": "estimated"
+        },
+        "mmlu_score": {
+          "value": 71,
+          "confidence": "estimated"
+        }
+      }
+    },
+    {
+      "id": "rtx_5090_32gb",
+      "display_name": "RTX 5090",
+      "vendor": "nvidia",
+      "class": "consumer",
+      "architecture": "blackwell",
+      "cc": 10.0,
+      "release_year": 2025,
+      "vram_gb": 32,
+      "memory": {
+        "type": "gddr7",
+        "bandwidth_gb_s": 1792,
+        "bus_bits": 512
+      },
+      "tensor_cores": {
+        "present": true,
+        "generation": 5
+      },
+      "power_draw_w": 575,
+      "form_factor": "triple_slot",
+      "cost_bracket": "$$$$$",
+      "status": "active",
+      "notes": "Blackwell flagship. First consumer 32 GB card, 1.79 TB/s. Opens 70B quantised on a single consumer GPU.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 240,
+          "confidence": "estimated"
+        },
+        "llama_3_1_13b_q4_km_tps": {
+          "value": 145,
+          "confidence": "estimated"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 260,
+          "confidence": "estimated"
+        },
+        "mmlu_score": {
+          "value": 82,
+          "confidence": "estimated",
+          "notes": "70B at Q4_K_M"
+        }
+      }
+    },
+    {
+      "id": "tesla_m40_24gb",
+      "display_name": "Tesla M40 24 GB",
+      "vendor": "nvidia",
+      "class": "server",
+      "architecture": "maxwell",
+      "cc": 5.2,
+      "release_year": 2015,
+      "vram_gb": 24,
+      "memory": {
+        "type": "gddr5",
+        "bandwidth_gb_s": 288,
+        "bus_bits": 384
+      },
+      "tensor_cores": {
+        "present": false
+      },
+      "power_draw_w": 250,
+      "form_factor": "server",
+      "cost_bracket": "$",
+      "status": "active",
+      "notes": "Cheapest 24 GB card. Compute 5.2 clears the Ollama floor but falls below 6.0 — excluded from bitsandbytes, Unsloth, modern quantisation kernels. Inference only, Ollama only. Passive cooling needs aftermarket shroud.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 12,
+          "confidence": "estimated",
+          "notes": "Maxwell scalar kernels, Ollama path"
+        },
+        "llama_3_1_13b_q4_km_tps": {
+          "value": 8,
+          "confidence": "estimated"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 13,
+          "confidence": "estimated"
+        },
+        "mmlu_score": {
+          "value": 78,
+          "confidence": "estimated",
+          "notes": "30B at Q4_K_M fits; quality same as faster cards at same quant"
+        }
+      }
+    },
+    {
+      "id": "tesla_p40_24gb",
+      "display_name": "Tesla P40 24 GB",
+      "vendor": "nvidia",
+      "class": "server",
+      "architecture": "pascal",
+      "cc": 6.1,
+      "release_year": 2016,
+      "vram_gb": 24,
+      "memory": {
+        "type": "gddr5",
+        "bandwidth_gb_s": 346,
+        "bus_bits": 384
+      },
+      "tensor_cores": {
+        "present": false
+      },
+      "power_draw_w": 250,
+      "form_factor": "server",
+      "cost_bracket": "$$",
+      "status": "active",
+      "notes": "Best-value 24 GB card. Pascal CC 6.1 clears the modern inference stack. No Tensor Cores; inference only.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 38,
+          "confidence": "estimated",
+          "tested_on": "2026-04-05"
+        },
+        "llama_3_1_13b_q4_km_tps": {
+          "value": 22,
+          "confidence": "estimated",
+          "tested_on": "2026-04-05"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 42,
+          "confidence": "estimated",
+          "tested_on": "2026-04-05"
+        },
+        "mmlu_score": {
+          "value": 78,
+          "confidence": "estimated"
+        }
+      }
+    },
+    {
+      "id": "tesla_p100_16gb",
+      "display_name": "Tesla P100 16 GB",
+      "vendor": "nvidia",
+      "class": "server",
+      "architecture": "pascal",
+      "cc": 6.0,
+      "release_year": 2016,
+      "vram_gb": 16,
+      "memory": {
+        "type": "hbm2",
+        "bandwidth_gb_s": 732,
+        "bus_bits": 4096
+      },
+      "tensor_cores": {
+        "present": false
+      },
+      "power_draw_w": 250,
+      "form_factor": "server",
+      "cost_bracket": "$$",
+      "status": "active",
+      "notes": "HBM2 at Pascal compute. 732 GB/s is faster than every consumer card below the 3090. No Tensor Cores limits training; inference is excellent.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 85,
+          "confidence": "estimated",
+          "tested_on": "2026-04-03"
+        },
+        "llama_3_1_13b_q4_km_tps": {
+          "value": 51,
+          "confidence": "estimated",
+          "tested_on": "2026-04-03"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 93,
+          "confidence": "estimated",
+          "tested_on": "2026-04-03"
+        },
+        "mmlu_score": {
+          "value": 71,
+          "confidence": "estimated"
+        }
+      }
+    },
+    {
+      "id": "tesla_v100_16gb",
+      "display_name": "Tesla V100 16 GB",
+      "vendor": "nvidia",
+      "class": "server",
+      "architecture": "volta",
+      "cc": 7.0,
+      "release_year": 2017,
+      "vram_gb": 16,
+      "memory": {
+        "type": "hbm2",
+        "bandwidth_gb_s": 900,
+        "bus_bits": 4096
+      },
+      "tensor_cores": {
+        "present": true,
+        "generation": 1
+      },
+      "power_draw_w": 250,
+      "form_factor": "server",
+      "cost_bracket": "$$$",
+      "status": "active",
+      "notes": "Volta with Tensor Cores. HBM2 at 900 GB/s plus first-gen Tensor Cores makes this the oldest card capable of mixed-precision adapter training.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 110,
+          "confidence": "estimated",
+          "tested_on": "2026-04-02"
+        },
+        "llama_3_1_13b_q4_km_tps": {
+          "value": 65,
+          "confidence": "estimated",
+          "tested_on": "2026-04-02"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 120,
+          "confidence": "estimated",
+          "tested_on": "2026-04-02"
+        },
+        "mmlu_score": {
+          "value": 71,
+          "confidence": "estimated"
+        }
+      }
+    },
+    {
+      "id": "tesla_v100_32gb",
+      "display_name": "Tesla V100 32 GB",
+      "vendor": "nvidia",
+      "class": "server",
+      "architecture": "volta",
+      "cc": 7.0,
+      "release_year": 2018,
+      "vram_gb": 32,
+      "memory": {
+        "type": "hbm2",
+        "bandwidth_gb_s": 900,
+        "bus_bits": 4096
+      },
+      "tensor_cores": {
+        "present": true,
+        "generation": 1
+      },
+      "power_draw_w": 300,
+      "form_factor": "server",
+      "cost_bracket": "$$$$",
+      "status": "active",
+      "notes": "32 GB HBM2 with Tensor Cores. Opens 70B quantised inference and full adapter-training workflows. Oldest card that meaningfully competes with current-gen flagships on inference throughput.",
+      "results": {
+        "llama_3_1_8b_q4_km_tps": {
+          "value": 115,
+          "confidence": "estimated",
+          "tested_on": "2026-04-08"
+        },
+        "llama_3_1_13b_q4_km_tps": {
+          "value": 68,
+          "confidence": "estimated",
+          "tested_on": "2026-04-08"
+        },
+        "qwen_2_5_7b_q4_km_tps": {
+          "value": 125,
+          "confidence": "estimated",
+          "tested_on": "2026-04-08"
+        },
+        "mmlu_score": {
+          "value": 82,
+          "confidence": "estimated",
+          "notes": "70B at Q4_K_M fits tight"
+        }
+      }
+    }
+  ]
+}
