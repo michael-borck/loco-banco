@@ -62,7 +62,10 @@ for (const [i, g] of (data.gpus ?? []).entries()) {
       confidenceCount[result.confidence] += 1;
     }
     if (result.confidence === 'measured' && !result.source_run_id) {
-      warnings.push(`${rwhere}: measured result has no source_run_id`);
+      errors.push(`${rwhere}: measured result requires a source_run_id`);
+    }
+    if (result.confidence === 'community' && !result.notes) {
+      warnings.push(`${rwhere}: community result has no source note`);
     }
   }
 }

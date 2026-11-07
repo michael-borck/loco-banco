@@ -15,8 +15,8 @@ Every result carries a `confidence` field. This is the most important part of th
 
 | Value | Meaning | Requirement |
 |---|---|---|
-| `measured` | The harness ran on this exact card | A `source_run_id` pointing at the raw run |
-| `community` | An external contributor supplied it | A source in `notes` |
+| `measured` | The harness ran on this exact card | A `source_run_id` pointing at the raw run (missing is an error) |
+| `community` | An external contributor supplied it | A source in `notes` (missing is a warning) |
 | `estimated` | Inferred from specs, no run | Nothing; rendered as an open dot |
 
 A result without a trace is not a measurement. The current picker dataset is placeholder data, so every value is marked `estimated` until real runs replace it.
@@ -48,12 +48,28 @@ A result without a trace is not a measurement. The current picker dataset is pla
 }
 ```
 
+## Adding a measured result
+
+A measured result must point at the run that produced it.
+
+```json
+"llama_3_1_8b_q4_km_tps": {
+  "value": 41.2,
+  "confidence": "measured",
+  "tested_on": "2026-11-08",
+  "source_run_id": "runs/2026-11-08-k1200-2b/",
+  "notes": "Median of 3, 512-token context"
+}
+```
+
+Store the raw trace under `results/` (or link it), and keep the identifier stable. The validator rejects any `measured` result without one.
+
 ## Validate
 
 ```bash
 npm run validate:results
 ```
 
-The validator checks required fields, unique benchmark ids, that every result points at a declared benchmark, and that confidence is one of the three allowed values. It warns when a result claims `measured` without a `source_run_id`, and when a dataset described as placeholder contains measured values.
+The validator checks required fields, unique benchmark ids, that every result points at a declared benchmark, and that confidence is one of the three allowed values. It rejects a `measured` result without a `source_run_id`, and warns when a dataset described as placeholder contains measured values.
 
 The validator is dependency-free so it can run in CI before the site builds.

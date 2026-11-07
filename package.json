@@ -13,6 +13,7 @@
     "@astrojs/starlight": "^0.34",
     "@locolabo/theme": "github:michael-borck/loco-theme#v0.1.1",
     "astro": "^5.7",
+    "d3": "^7.9.2",
     "sharp": "^0.33"
   },
   "overrides": {
