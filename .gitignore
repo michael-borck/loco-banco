@@ -36,3 +36,6 @@ site/
 # Node / Astro
 node_modules/
 .astro/
+
+# macOS + Node hygiene
+._*
