@@ -4,6 +4,8 @@ title: "GPU Inventory"
 
 Every GPU currently in the LocoLabo project, organised by machine. Cards move between machines as experiments require. This is the current assignment.
 
+The lab-wide canonical registry, including the LocoFósil relic shelf, is at [locolabo.org/gpu-registry](https://locolabo.org/gpu-registry/). This page remains the benchmark-fleet view.
+
 For specifications, acquisition guidance, and generation-level analysis see the [Nvidia GPU Reference](nvidia-gpu-reference).
 
 ---
