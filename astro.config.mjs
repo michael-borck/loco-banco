@@ -1,75 +1,60 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import { loco } from '@locolabo/theme';
 
 export default defineConfig({
   site: 'https://locobanco.org',
   integrations: [
-    starlight({
-      title: 'LocoBanco',
-      description: 'I have X GB of VRAM — what\'s the best model I can run?',
-      favicon: '/favicon.svg',
-      disable404Route: true,
-      logo: {
-        alt: 'LocoBanco',
-        src: './src/assets/bench.svg',
-        replacesTitle: false,
-      },
-      social: [
-        { icon: 'external', label: 'Home', href: 'https://locobanco.org' },
-        { icon: 'external', label: 'LocoLabo', href: 'https://locolabo.org' },
-      ],
-      customCss: ['./src/styles/custom.css'],
-      head: [
-        { tag: 'script', attrs: { src: 'https://cdn.plot.ly/plotly-2.35.2.min.js', defer: true } },
-        { tag: 'script', attrs: { src: '/javascripts/benchmark_data.js', defer: true } },
-        { tag: 'script', attrs: { src: '/javascripts/chart_theme.js', defer: true } },
-        { tag: 'script', attrs: { src: '/javascripts/charts_overview.js', defer: true } },
-        { tag: 'script', attrs: { src: '/javascripts/charts_quality.js', defer: true } },
-        { tag: 'script', attrs: { src: '/javascripts/charts_speed.js', defer: true } },
-        { tag: 'script', attrs: { src: '/javascripts/charts_efficiency.js', defer: true } },
-      ],
-      sidebar: [
-        {
-          label: 'Results',
-          items: [
-            { label: 'Quality Analysis', slug: 'quality' },
-            { label: 'Speed Analysis', slug: 'speed' },
-            { label: 'Bang per Bit', slug: 'bang-per-bit' },
-          ],
+    starlight(
+      loco({
+        project: 'loco-banco',
+        title: 'LocoBanco',
+        description: "I have X GB of VRAM — what's the best model I can run?",
+        home: 'https://locobanco.org',
+        github: 'loco-banco',
+        accent: { low: '#052e16', main: '#22c55e', high: '#bbf7d0' },
+        favicon: '/favicon.svg',
+        logo: {
+          alt: 'LocoBanco',
+          src: './src/assets/bench.svg',
+          replacesTitle: false,
         },
-        {
-          label: 'Hardware',
-          items: [
-            { label: 'Benchmark Hardware', slug: 'colmena' },
-            { label: 'GPU Inventory', slug: 'gpu-inventory' },
-            { label: 'VRAM Tiers', slug: 'tiers' },
-          ],
-        },
-        {
-          label: 'Guide',
-          items: [
-            { label: 'Benchmarking Guide', slug: 'guide' },
-            { label: 'Advanced Reference', slug: 'advanced-reference' },
-          ],
-        },
-        {
-          label: 'LocoLabo Projects',
-          items: [
-            { label: 'All Projects', link: 'https://locolabo.org/projects/' },
-            { label: 'LocoLabo', link: 'https://locolabo.org' },
-            { label: 'LocoLLM', link: 'https://locollm.org' },
-            { label: 'LocoBench Picker', link: 'https://picker.locobanco.org' },
-            { label: 'LocoFósil', link: 'https://locofosil.org' },
-            { label: 'LocoMusa', link: 'https://locomusa.org' },
-            { label: 'LocoConvoy', link: 'https://lococonvoy.org' },
-            { label: 'LocoAgente', link: 'https://locoagente.org' },
-            { label: 'LocoPuente', link: 'https://locopuente.org' },
-            { label: 'LocoEnsayo', link: 'https://locoensayo.org' },
-            { label: 'LocoNotas', link: 'https://loconotas.org' },
-            { label: 'LocoBase', link: 'https://github.com/michael-borck/loco-base' },
-          ],
-        },
-      ],
-    }),
+        customCss: ['./src/styles/custom.css'],
+        head: [
+          { tag: 'script', attrs: { src: 'https://cdn.plot.ly/plotly-2.35.2.min.js', defer: true } },
+          { tag: 'script', attrs: { src: '/javascripts/benchmark_data.js', defer: true } },
+          { tag: 'script', attrs: { src: '/javascripts/chart_theme.js', defer: true } },
+          { tag: 'script', attrs: { src: '/javascripts/charts_overview.js', defer: true } },
+          { tag: 'script', attrs: { src: '/javascripts/charts_quality.js', defer: true } },
+          { tag: 'script', attrs: { src: '/javascripts/charts_speed.js', defer: true } },
+          { tag: 'script', attrs: { src: '/javascripts/charts_efficiency.js', defer: true } },
+        ],
+        sidebar: [
+          {
+            label: 'Results',
+            items: [
+              { label: 'Quality Analysis', slug: 'quality' },
+              { label: 'Speed Analysis', slug: 'speed' },
+              { label: 'Bang per Bit', slug: 'bang-per-bit' },
+            ],
+          },
+          {
+            label: 'Hardware',
+            items: [
+              { label: 'Benchmark Hardware', slug: 'colmena' },
+              { label: 'GPU Inventory', slug: 'gpu-inventory' },
+              { label: 'VRAM Tiers', slug: 'tiers' },
+            ],
+          },
+          {
+            label: 'Guide',
+            items: [
+              { label: 'Benchmarking Guide', slug: 'guide' },
+              { label: 'Advanced Reference', slug: 'advanced-reference' },
+            ],
+          },
+        ],
+      })
+    ),
   ],
 });
