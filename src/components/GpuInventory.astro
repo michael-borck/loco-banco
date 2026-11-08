@@ -1,0 +1,127 @@
+---
+import data from '@locolabo/theme/gpus.json';
+import MachineTable from './MachineTable.astro';
+
+const fleet = data.cards.filter((r) => r.projects.includes('LocoBanco'));
+const machineOf = (r) => r.banco_machine ?? r.group;
+const rowsFor = (machine, subgroup) =>
+  fleet.filter((r) => machineOf(r) === machine && (!subgroup || r.subgroup === subgroup));
+
+const installed = (rows) => rows.reduce((n, r) => n + (r.status === 'installed' ? r.count : 0), 0);
+const incoming = (rows) => rows.reduce((n, r) => n + (r.status === 'incoming' ? r.count : 0), 0);
+
+const totalInstalled = installed(fleet);
+const totalIncoming = incoming(fleet);
+
+const machines = [
+  {
+    name: 'Colmena',
+    role: 'RTX-era LocoBanco consumer tier benchmarking',
+    desc: 'The RTX-era benchmark platform. An 8-GPU enclosed mining rig running LocoBanco. Cards here are chosen as floor representatives: the worst card per VRAM tier, so results are honest baselines. Matched trios give repeat-measurement discipline at their tier.',
+  },
+  {
+    name: 'Tortuga',
+    role: 'Swappable tier cards for pre-RTX LocoBanco coverage',
+    desc: 'Swappable bench cards. Cards rotate through Tortuga to fill out LocoBanco tier coverage, particularly the older Maxwell and Pascal generations.',
+  },
+  {
+    name: 'Hidra',
+    role: 'LocoConvoy multi-GPU + server GPU benchmarking + onboarding',
+    desc: 'Full-bandwidth multi-GPU research, server GPU benchmarking, and GPU onboarding. X99 dual-Xeon platform with 4x PCIe x16 slots in an open-frame chassis for rapid card swaps. The server GPUs are the primary LocoBanco payload at their native VRAM tiers; consumer cards rotate through for onboarding and fill-in benchmarks.',
+  },
+  {
+    name: 'Puente',
+    role: 'LocoPuente PoC + LocoEnsayo chatbots',
+    desc: 'Student-facing host. Ryzen 5 2600 desktop running the "closing the gap" minimal LocoPuente PoC and most LocoEnsayo rehearsal chatbots on a single card.',
+  },
+  {
+    name: 'Búho',
+    role: 'Dedicated LocoLLM adapter training and single-card inference',
+    desc: 'Dedicated AI inference and LocoLLM adapter training. Single-Xeon X99 workstation with 32 GB DDR4. One card, one job, patient and nocturnal.',
+  },
+  {
+    name: 'Hormiga',
+    role: 'SFF floor node / office deployment',
+    desc: 'Low-profile / office deployment.',
+  },
+  {
+    name: 'Unassigned',
+    role: '—',
+    desc: '',
+  },
+];
+---
+
+<p>Every GPU currently in the LocoLabo project, organised by machine. Cards move between machines as experiments require. This is the current assignment.</p>
+<p>
+  The lab-wide canonical registry, including the LocoFósil relic shelf, is at
+  <a href="https://locolabo.org/gpu-registry/">locolabo.org/gpu-registry</a>. This page remains
+  the benchmark-fleet view, generated from the same <code>@locolabo/theme</code> registry.
+</p>
+<p>For specifications, acquisition guidance, and generation-level analysis see the <a href="/nvidia-gpu-reference/">Nvidia GPU Reference</a>.</p>
+
+{machines.map((m) => {
+  const rows = rowsFor(m.name);
+  if (rows.length === 0) return null;
+  return (
+    <section>
+      <h2>{m.name}</h2>
+      {m.desc && <p>{m.desc}</p>}
+      {m.name === 'Hidra' ? (
+        <>
+          <h3>Server GPUs</h3>
+          <MachineTable rows={rowsFor('Hidra', 'server')} />
+          <h3>Consumer rotation (onboarding + small-card benchmarks)</h3>
+          <MachineTable rows={rowsFor('Hidra', 'consumer')} />
+        </>
+      ) : (
+        <MachineTable rows={rows} />
+      )}
+    </section>
+  );
+})}
+
+<hr />
+
+<h2>Summary</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Machine</th>
+      <th>Cards</th>
+      <th>Primary Role</th>
+    </tr>
+  </thead>
+  <tbody>
+    {machines.map((m) => {
+      const rows = rowsFor(m.name);
+      const inst = installed(rows);
+      const inc = incoming(rows);
+      if (inst + inc === 0) return null;
+      return (
+        <tr>
+          <td>{m.name}</td>
+          <td>{inst}{inc > 0 ? ` (+${inc} incoming)` : ''}</td>
+          <td>{m.role}</td>
+        </tr>
+      );
+    })}
+    <tr>
+      <td><strong>Total installed</strong></td>
+      <td><strong>{totalInstalled}</strong></td>
+      <td>(+ {totalIncoming} incoming server cards for Hidra)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><em>RTX 5060 Ti: not confirmed in fleet, omitted pending verification.</em></p>
+
+<hr />
+
+<p>
+  <em>
+    For GPU generation details and acquisition guidance see the
+    <a href="/nvidia-gpu-reference/">Nvidia GPU Reference</a>. For benchmarking methodology see
+    the <a href="/guide/">guide</a>.
+  </em>
+</p>

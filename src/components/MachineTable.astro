@@ -1,0 +1,27 @@
+---
+const { rows } = Astro.props;
+---
+
+<table>
+  <thead>
+    <tr>
+      <th>Card</th>
+      <th>VRAM</th>
+      <th>Bandwidth</th>
+      <th>Tier Role</th>
+    </tr>
+  </thead>
+  <tbody>
+    {rows.map((r) => (
+      <tr>
+        <td>
+          {r.card}
+          {r.status === 'incoming' && <><br /><small>incoming</small></>}
+        </td>
+        <td>{r.vram_gb} GB</td>
+        <td>~{r.bandwidth_gb_s} GB/s</td>
+        <td>{r.role}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
