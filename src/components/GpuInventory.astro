@@ -12,6 +12,7 @@ const incoming = (rows) => rows.reduce((n, r) => n + (r.status === 'incoming' ? 
 
 const totalInstalled = installed(fleet);
 const totalIncoming = incoming(fleet);
+const totalUnassigned = installed(rowsFor('Unassigned'));
 
 const machines = [
   {
@@ -47,7 +48,7 @@ const machines = [
   {
     name: 'Unassigned',
     role: '—',
-    desc: '',
+    desc: 'Owned, not installed in a machine.',
   },
 ];
 ---
@@ -107,9 +108,9 @@ const machines = [
       );
     })}
     <tr>
-      <td><strong>Total installed</strong></td>
+      <td><strong>Total owned</strong></td>
       <td><strong>{totalInstalled}</strong></td>
-      <td>(+ {totalIncoming} incoming server cards for Hidra)</td>
+      <td>{totalUnassigned} awaiting installation{totalIncoming > 0 ? `, ${totalIncoming} incoming` : ''}</td>
     </tr>
   </tbody>
 </table>
