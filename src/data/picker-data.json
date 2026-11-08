@@ -1,7 +1,7 @@
 {
   "schema_version": "0.1",
   "generated_at": "2026-04-18",
-  "notes": "v0.1 prototype data: hand-authored plausible numbers, not real LocoBench measurements. All values are marked estimated until real harness output replaces them. Migrated into LocoBanco for Phase 4; validated by scripts/validate-results.mjs.",
+  "notes": "v0.1 prototype data: hand-authored plausible numbers, not real LocoBanco measurements. All values are marked estimated until real harness output replaces them. Migrated into LocoBanco for Phase 4; validated by scripts/validate-results.mjs.",
   "currencies": {
     "usd": {
       "code": "USD",
