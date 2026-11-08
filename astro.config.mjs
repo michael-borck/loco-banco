@@ -13,10 +13,9 @@ export default defineConfig({
         home: 'https://locobanco.org',
         github: 'loco-banco',
         accent: { low: '#052e16', main: '#22c55e', high: '#bbf7d0' },
-        favicon: '/favicon.svg',
         logo: {
           alt: 'LocoBanco',
-          src: './src/assets/bench.svg',
+          src: './src/assets/art/icon.png',
           replacesTitle: false,
         },
         customCss: ['./src/styles/custom.css'],
