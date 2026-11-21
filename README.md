@@ -1,5 +1,9 @@
 # loco-banco
 
+<p align="center">
+  <img src="src/assets/art/hero.webp" alt="loco-banco" width="640">
+</p>
+
 **I have X GB of VRAM. What's the best model I can run?**
 
 loco-banco benchmarks every model that fits a given VRAM budget on real consumer hardware, at the floor of each tier. Full-precision small models, quantized larger ones, and everything between compete on equal footing: quality, speed, and efficiency.
